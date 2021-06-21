@@ -1,0 +1,29 @@
+﻿using SalesManager.Models;
+using System.ComponentModel.DataAnnotations;
+
+namespace SalesManager.Model.ViewModels
+{
+    public class RegisterVm
+    {
+        [Required]
+        [StringLength(20)]
+        public string UserName { get; set; }
+
+        [Required]
+        [StringLength(15, MinimumLength = 6)]
+        public string Password { get; set; }
+
+        [Required]
+        [StringLength(15, MinimumLength = 6)]
+        public string ConfirmPassword { get; set; }
+
+        [Required]
+        [StringLength(15, MinimumLength =2)]
+        public string Branch { get; set; }
+
+        [Required]
+        public bool RememberMe { get; set; }
+
+        internal ApplicationUser Transform => new() { UserName = UserName, Password = Password };
+    }
+}
