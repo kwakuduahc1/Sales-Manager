@@ -14,6 +14,7 @@ using System.Text;
 using System.Net;
 using SalesManager.Model;
 using Microsoft.EntityFrameworkCore;
+using SalesManager.Models;
 
 namespace SalesManager
 {
