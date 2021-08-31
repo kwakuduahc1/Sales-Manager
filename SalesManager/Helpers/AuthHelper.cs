@@ -28,8 +28,8 @@ namespace SalesManager.Helper
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                 var tokeOptions = new JwtSecurityToken(
-                    issuer: Env.IsProduction() ? "https://amagyei-herbal.clinic/" : "https://localhost:44361",
-                    audience: Env.IsProduction() ? "https://amagyei-herbal.clinic/" : "https://localhost:44361",
+                    issuer: Env.IsProduction() ? "https://danitogames.com/" : "https://localhost:44326/",
+                    audience: Env.IsProduction() ? "https://danitogames.com/" : "https://localhost:44326/",
                     claims: Claims,
                     expires: DateTime.Now.AddDays(7),
                     signingCredentials: signinCredentials

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SalesManager.Model;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,15 +54,18 @@ namespace SalesManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Stockings stock)
+        public async Task<IActionResult> Create([FromBody] List<Stockings> stock)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
-            stock.DateAdded = DateTime.UtcNow;
-            stock.UserName = User.Identity.Name;
-            db.Add(stock);
+            stock.ForEach(x =>
+            {
+                x.DateAdded = DateTime.UtcNow;
+                x.UserName = User.Identity.Name;
+            });
+            db.AddRange(stock);
             await db.SaveChangesAsync();
-            return Created($"/Find?id={stock.ItemsID}", stock);
+            return Created($"", stock.First());
         }
 
         [HttpPost]

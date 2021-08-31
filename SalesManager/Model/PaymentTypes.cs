@@ -10,6 +10,7 @@ namespace SalesManager.Model
         public byte PaymentTypesID { get; set; }
 
         [StringLength(15, MinimumLength = 4)]
+        [Required]
         public string PaymentType { get; set; }
     }
 }

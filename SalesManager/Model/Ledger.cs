@@ -8,6 +8,10 @@ namespace SalesManager.Model
 
         public int Quantity { get; set; }
 
+        public int ItemsID { get; set; }
+
+        public string ItemName { get; set; }
+
         public int Balance { get; set; }
 
         public DateTime DateAdded { get; set; }

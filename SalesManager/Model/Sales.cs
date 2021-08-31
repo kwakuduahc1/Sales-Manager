@@ -34,6 +34,10 @@ namespace SalesManager.Model
         [StringLength(10, MinimumLength = 8)]
         public string Receipt { get; set; }
 
+        [Column(TypeName ="money")]
+        [Range(1, double.MaxValue)]
+        public decimal Cost { get; set; }
+
         public DateTime DateAdded { get; set; }
 
         [Timestamp, ConcurrencyCheck]

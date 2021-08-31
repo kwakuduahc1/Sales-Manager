@@ -16,7 +16,14 @@ namespace SalesManager.Model
         public DateTime DateAdded { get; set; }
 
         [Required]
+        public DateTime DateBought { get; set; }
+
+        [Required]
         public short Quantity { get; set; }
+
+        [Required]
+        [StringLength(30, MinimumLength = 3)]
+        public string Receipt { get; set; }
 
         [Required]
         [StringLength(75, MinimumLength = 5)]
@@ -31,7 +38,6 @@ namespace SalesManager.Model
 
         [Timestamp, ConcurrencyCheck]
         public byte[] Concurrency { get; set; }
-
 
         public virtual Items Items { get; set; }
 

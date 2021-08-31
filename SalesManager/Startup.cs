@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System;
@@ -20,6 +19,8 @@ namespace SalesManager
 {
     public class Startup
     {
+        private const int V = 0;
+
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
@@ -32,21 +33,20 @@ namespace SalesManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(x =>
-            {
-                x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            });
+            services.AddControllersWithViews();
+            services.AddSingleton<AppFeatures>();
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddIdentity<ApplicationUser, IdentityRole>(x =>
             {
-                x.SignIn.RequireConfirmedAccount = true;
+                x.SignIn.RequireConfirmedAccount = false;
                 x.Password.RequiredLength = 8;
-                x.Password.RequireNonAlphanumeric = true;
+                x.Password.RequireNonAlphanumeric = false;
                 x.Password.RequireDigit = true;
-                x.Password.RequireUppercase = true;
+                x.Password.RequireUppercase = false;
                 x.Password.RequireLowercase = true;
                 x.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
             })
-               .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication(x =>
             {
@@ -59,38 +59,46 @@ namespace SalesManager
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SxkeJZF776DgzfE!@")),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppFeatures").GetSection("Key").Value)),
                     ValidateIssuer = true,
                     RequireExpirationTime = true,
                     ValidateAudience = false,
                     ValidateLifetime = true,
-                    ValidIssuer = Env.IsProduction() ? "https://danitogames.com/" : "https://localhost:44355",
-                    ValidAudience = Env.IsProduction() ? "https://danitogames.com/" : "https://localhost:44355"
+                    ValidIssuer = Configuration.GetSection("AppFeatures").GetSection("Issuer").Value,
+                    ValidAudience = Configuration.GetSection("AppFeatures").GetSection("Audience").Value
                 };
             });
             services.AddDataProtection();
-            services.AddAntiforgery(options =>
+            services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.HeaderName = "X-XSRF-TOKEN";
+                options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
             });
             services.AddCors(options =>
             {
                 options.AddPolicy("bStudioApps",
                     x => x.AllowAnyOrigin()
-                    .WithHeaders("Content-Type", "Authority", "Accept", "Origin", "Access-Control-Allow-Origin", "Authorization", "X-XSRF-TOKEN", "XSRF-TOKEN", "enctype")
-                    .WithMethods("GET", "POST")
-                    .DisallowCredentials());
+                    .WithHeaders("Content-Type", "Accept", "Origin", "Access-Control-Allow-Origin", "Authorization", "X-XSRF-TOKEN", "XSRF-TOKEN", "enctype", "info")
+                    .DisallowCredentials()
+                    .WithMethods("GET", "POST", "OPTIONS"));
             });
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
-            });
-            services.AddControllers();
+            //services.AddAntiforgery(o =>
+            //{
+            //    o.HeaderName = "X-XSRF-TOKEN";
+            //    o.Cookie = new CookieBuilder
+            //    {
+            //        Expiration = TimeSpan.FromDays(7),
+            //        IsEssential = true,
+            //        MaxAge = TimeSpan.FromDays(7),
+            //        HttpOnly = false,
+            //        Name = "XSRF-TOKEN",
+            //        SameSite = SameSiteMode.Strict,
+            //    };
+            //});
             services.AddSignalR(x => x.KeepAliveInterval = TimeSpan.FromSeconds(10));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IAntiforgery antiforgery)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IAntiforgery antiforgery)
         {
             if (env.IsDevelopment())
             {
@@ -102,36 +110,34 @@ namespace SalesManager
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.Use(next => context =>
-            {
-                var tokens = antiforgery.GetAndStoreTokens(context);
-                context.Response.Cookies.Append("X-XSRF-TOKEN", tokens.RequestToken,
-                    new CookieOptions() { HttpOnly = false });
-                return next(context);
-            });
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
+            //app.Use((context, next) =>
+            //{
+            //    string path = context.Request.Path.Value;
+            //    if (context is null)
+            //        antiforgery.SetCookieTokenAndHeader(context);
+            //    var token = antiforgery.GetAndStoreTokens(context);
+            //    context.Response.Cookies.Append("XSRF-TOKEN", token.RequestToken
+            //        //new CookieOptions
+            //        //{
+            //        //    IsEssential = true,
+            //        //    MaxAge = TimeSpan.FromDays(7),
+            //        //    HttpOnly = false,
+            //        //    SameSite = SameSiteMode.Strict,
+            //        //}
+            //        );
+            //    return next();
+            //});
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("bStuioApps");
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                        name: "default",
-                        pattern: "{controller=Home}/{action=Index}/{id?}");
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

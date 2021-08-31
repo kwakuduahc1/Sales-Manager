@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 namespace SalesManager.Areas.Stores.Controllers
 {
     [EnableCors("bStudioApps")]
-    [Authorize(Roles = "Power")]
+    //[Authorize(Roles = "Power")]
+    //[AutoValidateAntiforgeryToken]
     public class ItemsController : Controller
     {
         private readonly ApplicationDbContext db;
@@ -31,6 +32,18 @@ namespace SalesManager.Areas.Stores.Controllers
 
         [HttpGet]
         public async Task<IEnumerable> List() => await db.Items.ToListAsync();
+
+        [HttpGet]
+        public async Task<IEnumerable> Prices() => await db.Items.Where(x => x.Prices.Count > 0).Select(x => new { x.ItemName, x.MinimumStock, x.ItemsID, x.Prices.OrderBy(v=>v.DateSet).LastOrDefault().Price }).ToListAsync();
+
+        [HttpGet]
+        public async Task<IEnumerable> ToSell()
+        {
+            string qry = $"[dbo].[spItemBalances]";
+            using var ddb = db.Database.GetDbConnection();
+            var results = await ddb.QueryAsync<SellingItems>(qry, commandType: CommandType.StoredProcedure);
+            return results.ToList();
+        }
 
         [HttpGet]
         public async Task<IEnumerable> Balances() => await db.Items

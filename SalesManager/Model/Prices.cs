@@ -12,7 +12,11 @@ namespace SalesManager.Model
 
         [Required]
         [Range(1, double.MaxValue)]
+        [Column(TypeName = "money")]
         public decimal Price { get; set; }
+
+        [Required]
+        public int ItemsID { get; set; }
 
         public DateTime DateSet { get; set; }
 
@@ -21,5 +25,7 @@ namespace SalesManager.Model
 
         [Timestamp, ConcurrencyCheck]
         public byte[] Concurrency { get; set; }
+
+        public virtual Items Items { get; set; }
     }
 }
