@@ -31,29 +31,40 @@ namespace SalesManager.Controllers
         }).ToListAsync();
 
         [HttpGet]
-        public async Task<IEnumerable> SalesByDate(DateTime start, DateTime end)
+        public async Task<IActionResult> SalesByDate(DateTime start, DateTime end)
         {
-            return await db.Sales.Where(x => x.DateAdded.Date >= start.Date && x.DateAdded <= end.Date).GroupBy(x => new { x.DateAdded.Date, x.ItemsID, x.Items.ItemName }, (k, v) => new
+            var recs = await db.Payments.Where(x => x.DatePaid.Date >= start.Date && x.DatePaid.Date <= end.Date).Include(x => x.Sales).Select(v => new ReceiptVm
             {
-                DateAdded = k.Date,
-                k.ItemName,
-                k.ItemsID,
-                Quantity = v.Sum(b => b.Quantity),
-                Cost = v.Sum(b => b.Cost)
+                Cash = v.Cash,
+                MobileMoney = v.MobileMoney,
+                Receipt = v.Receipt,
+                DatePaid = v.DatePaid.Date
             }).ToListAsync();
+            if (recs.Count < 1)
+                return NotFound(new { Message = "No transactions were found the dates provided" });
+            recs.ForEach(x =>
+            {
+                x.Sales = db.Sales.Where(t => t.Receipt == x.Receipt).Select(t => new SalesVm { ItemsID = t.ItemsID, Quantity = t.Quantity, ItemName = t.Items.ItemName, Cost = t.Cost }).ToList();
+            });
+            return Ok(recs.OrderByDescending(x => x.DatePaid));
         }
 
         [HttpGet]
-        public async Task<IEnumerable> Receipt(string id) => await db.Sales.Where(x => x.Receipt == id).Select(x => new
+        public async Task<IActionResult> Receipt(string id)
         {
-            x.Quantity,
-            x.DateAdded,
-            x.Customer,
-            x.Cost,
-            x.ItemsID,
-            x.Items.ItemName,
-            x.SalesID
-        }).ToListAsync();
+            var rec = await db.Payments.Where(x => x.Receipt == id).Select(x => new
+            {
+                x.Telephone,
+                x.MobileMoney,
+                x.Total,
+                x.CanContact,
+                x.Customer,
+                x.DatePaid,
+                x.Cash,
+                Sales = x.Sales.Select(t => new { t.Quantity, t.Items.ItemName, t.Cost })
+            }).SingleOrDefaultAsync();
+            return rec is null ? NotFound(new { Message = "Receipt not found" }) : Ok(rec);
+        }
 
         [HttpGet]
         public async Task<IEnumerable> Balances() => await db.Items.Select(x => new { x.ItemName, x.ItemsID, x.Group, Quantity = x.Stockings.Sum(t => t.Quantity) }).ToListAsync();
@@ -65,7 +76,7 @@ namespace SalesManager.Controllers
             x.ItemsID,
             x.Cost,
             x.Quantity,
-            x.Customer
+            x.Payments.Customer
         }).ToListAsync();
 
         [HttpGet]
@@ -76,36 +87,53 @@ namespace SalesManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] List<Sales> sales)
+        public async Task<IActionResult> Create([FromBody] ReceiptVm tran)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
-            sales.ForEach(x =>
+            var payments = new Payments
+            {
+                Receipt = PaymentsHelper.RandomString(new Random().Next(6, 8)),
+                DatePaid = DateTime.UtcNow,
+                Cash = tran.Cash,
+                MobileMoney = tran.MobileMoney,
+                CanContact = tran.CanContact,
+                Customer = tran.Customer,
+                Telephone = tran.Telephone,
+                Total = tran.MobileMoney + tran.Cash,
+                Sales = new List<Sales>()
+            };
+            tran.Sales.ForEach(x =>
             {
                 var price = db.Prices.Where(x => x.ItemsID == x.ItemsID).OrderByDescending(x => x.DateSet).FirstOrDefault();
-                x.DateAdded = DateTime.UtcNow;
-                x.UserName = User.Identity.Name ?? "";
-                x.Cost = x.Quantity * price.Price;
-                x.Receipt = PaymentsHelper.RandomString(new Random().Next(6, 8));
-                db.Add(x);
+                payments.Sales.Add(new Sales
+                {
+                    DateAdded = payments.DatePaid,
+                    ItemsID = x.ItemsID,
+                    Quantity = x.Quantity,
+                    Cost = x.Quantity * price.Price,
+                    Receipt = payments.Receipt,
+                    UserName = User.Identity.Name,
+                });
             });
+            db.Add(payments);
             await db.SaveChangesAsync();
-            return Created($"/Find?id={sales[0].Receipt}", sales.FirstOrDefault());
+            return Created($"/Find?id={payments.Receipt}", new { payments.Receipt, payments.Total });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit([FromBody] Stockings stock)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
-            var _stock = await db.Stockings.FindAsync(stock.ItemsID);
-            if (_stock == null)
-                return BadRequest(new { Message = "Transaction does not exist" });
-            _stock.Quantity = stock.Quantity;
-            db.Entry(_stock).State = EntityState.Modified;
-            await db.SaveChangesAsync();
-            return Accepted(stock);
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> Edit([FromBody] Stockings stock)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
+        //    var _stock = await db.Stockings.FindAsync(stock.ItemsID);
+        //    if (_stock == null)
+        //        return BadRequest(new { Message = "Transaction does not exist" });
+        //    _stock.Quantity = stock.Quantity;
+        //    db.Entry(_stock).State = EntityState.Modified;
+        //    await db.SaveChangesAsync();
+        //    return Accepted(stock);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> Delete([FromBody] Stockings stock)

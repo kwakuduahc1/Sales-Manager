@@ -19,8 +19,6 @@ namespace SalesManager
 {
     public class Startup
     {
-        private const int V = 0;
-
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
@@ -81,19 +79,19 @@ namespace SalesManager
                     .DisallowCredentials()
                     .WithMethods("GET", "POST", "OPTIONS"));
             });
-            //services.AddAntiforgery(o =>
-            //{
-            //    o.HeaderName = "X-XSRF-TOKEN";
-            //    o.Cookie = new CookieBuilder
-            //    {
-            //        Expiration = TimeSpan.FromDays(7),
-            //        IsEssential = true,
-            //        MaxAge = TimeSpan.FromDays(7),
-            //        HttpOnly = false,
-            //        Name = "XSRF-TOKEN",
-            //        SameSite = SameSiteMode.Strict,
-            //    };
-            //});
+            services.AddAntiforgery(o =>
+            {
+                o.HeaderName = "X-XSRF-TOKEN";
+                o.Cookie = new CookieBuilder
+                {
+                    Expiration = TimeSpan.FromDays(7),
+                    IsEssential = true,
+                    MaxAge = TimeSpan.FromDays(7),
+                    HttpOnly = false,
+                    Name = "XSRF-TOKEN",
+                    SameSite = SameSiteMode.Strict,
+                };
+            });
             services.AddSignalR(x => x.KeepAliveInterval = TimeSpan.FromSeconds(10));
         }
 

@@ -9,5 +9,7 @@
         string Audience { get; }
 
         string Issuer { get; }
+
+        System.DateTime Expiry { get; }
     }
 }

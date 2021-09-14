@@ -8,7 +8,7 @@ namespace SalesManager.Controllers {
         }
         public static string RandomString(int length = 6)
         {
-            string alphabet = "ABCDEFGHIJKLMNPQRTUVWXYZ0123456789@#";
+            string alphabet = "ABCDEFGHJKLMNPQRTUVWXYZ1234567890";
             var outOfRange = byte.MaxValue + 1 - (byte.MaxValue + 1) % alphabet.Length;
             return string.Concat(
                 Enumerable

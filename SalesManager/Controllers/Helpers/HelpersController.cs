@@ -31,7 +31,7 @@ namespace SalesManager.Controllers.Helpers
             while (cont == false)
             {
                 code = RandomString(new Random().Next(8, 10));
-                if (!await db.Sales.AnyAsync(x => x.Receipt == code))
+                if (!await db.Payments.AnyAsync(x => x.Receipt == code))
                     cont = true;
             }
             return code;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using SalesManager.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,25 +14,26 @@ namespace SalesManager.Helper
     {
         private IWebHostEnvironment Env { get; }
         private readonly IList<Claim> Claims;
+        private readonly IAppFeatures App;
 
-        public AuthHelper(IList<Claim> claims, IWebHostEnvironment environment)
+        public AuthHelper(IList<Claim> claims, IWebHostEnvironment environment, AppFeatures app)
         {
             Env = environment;
             Claims = claims;
-
+            App = app;
         }
         public string Key
         {
             get
             {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SxkeJZF776DgzfE!@"));
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(App.Key));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                 var tokeOptions = new JwtSecurityToken(
-                    issuer: Env.IsProduction() ? "https://danitogames.com/" : "https://localhost:44326/",
-                    audience: Env.IsProduction() ? "https://danitogames.com/" : "https://localhost:44326/",
+                    issuer: App.Issuer,
+                    audience: App.Audience,
                     claims: Claims,
-                    expires: DateTime.Now.AddDays(7),
+                    expires: App.Expiry,
                     signingCredentials: signinCredentials
                 );
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);

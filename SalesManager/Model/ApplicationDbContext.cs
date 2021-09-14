@@ -42,6 +42,8 @@ namespace SalesManager.Model
 
         public virtual DbSet<Sales> Sales { get; set; }
 
+        public virtual DbSet<Payments> Payments { get; set; }
+
         public virtual DbSet<Prices> Prices { get; set; }
 
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }

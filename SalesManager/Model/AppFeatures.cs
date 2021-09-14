@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 
 namespace SalesManager.Models
 {
@@ -12,6 +13,8 @@ namespace SalesManager.Models
 
         public string Issuer { get; }
 
+        public DateTime Expiry { get; }
+
         public AppFeatures(IConfiguration config)
         {
             var cnf = config.GetSection(nameof(AppFeatures));
@@ -19,6 +22,7 @@ namespace SalesManager.Models
             Key = cnf.GetSection(nameof(Key)).Value;
             Issuer = cnf.GetSection(nameof(Issuer)).Value;
             Audience = cnf.GetSection(nameof(Audience)).Value;
+            Expiry = DateTime.Now.AddDays(int.Parse(cnf.GetSection(nameof(Expiry)).Value));
         }
     }
 }

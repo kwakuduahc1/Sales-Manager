@@ -22,16 +22,18 @@ namespace SalesManager.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         public IWebHostEnvironment Env { get; }
         private readonly ApplicationDbContext db;
-
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, DbContextOptions<ApplicationDbContext> contextOptions, IWebHostEnvironment environment)
+        private readonly AppFeatures appFeatures;
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, DbContextOptions<ApplicationDbContext> contextOptions, IWebHostEnvironment environment, AppFeatures app)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             db = new ApplicationDbContext(contextOptions);
             Env = environment;
+            appFeatures = app;
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginVm user)
         {
             if (!ModelState.IsValid)
@@ -43,7 +45,7 @@ namespace SalesManager.Controllers
                 return Unauthorized();
             await _signInManager.SignInAsync(_user, false);
             var claims = await _userManager.GetClaimsAsync(_user);
-            var token = new AuthHelper(claims, Env).Key;
+            var token = new AuthHelper(claims, Env, appFeatures).Key;
             return Ok(new { Token = token });
         }
 
@@ -61,13 +63,15 @@ namespace SalesManager.Controllers
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
             if (await _userManager.Users.CountAsync() == 1)
                 await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Power"));
+            if (await _userManager.Users.CountAsync() == 2)
+                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Stocker"));
             await db.SaveChangesAsync();
             return Created("", new { user.UserName, user.PhoneNumber, user.Email, user.Id });
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> SignOut()
+        public new async Task<IActionResult> SignOut()
         {
             await _signInManager.SignOutAsync();
             return Accepted();

@@ -37,6 +37,7 @@ namespace SalesManager.Areas.Stores.Controllers
         public async Task<IEnumerable> Prices() => await db.Items.Where(x => x.Prices.Count > 0).Select(x => new { x.ItemName, x.MinimumStock, x.ItemsID, x.Prices.OrderBy(v=>v.DateSet).LastOrDefault().Price }).ToListAsync();
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IEnumerable> ToSell()
         {
             string qry = $"[dbo].[spItemBalances]";
