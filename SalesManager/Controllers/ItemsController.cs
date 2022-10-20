@@ -40,10 +40,24 @@ namespace SalesManager.Areas.Stores.Controllers
         [AllowAnonymous]
         public async Task<IEnumerable> ToSell()
         {
-            string qry = $"[dbo].[spItemBalances]";
-            using var ddb = db.Database.GetDbConnection();
-            var results = await ddb.QueryAsync<SellingItems>(qry, commandType: CommandType.StoredProcedure);
-            return results.ToList();
+            string qry = @"select i.itemsID, i.[group], i.itemName, ISNULL(p.Price, 0) price, ISNULL(st.Stock, 0) - ISNULL(sl.Sales, 0) balance
+                            from Items i 
+                            outer apply(
+	                            select top 1 Price 
+	                            from Prices p 
+	                            where p.ItemsID = i.ItemsID
+	                            order by DateSet
+                            )p
+                            outer apply(
+	                            select sum(s.Quantity) Stock
+	                            from Stockings s 
+	                            where s.ItemsID = i.ItemsID
+                            )st
+                            outer apply (
+	                            select SUM(sl.Quantity) Sales
+	                            from Sales sl where sl.ItemsID = i.ItemsID
+                            )sl";
+            return await db.Database.GetDbConnection().QueryAsync<SellingItems>(qry);
         }
 
         [HttpGet]

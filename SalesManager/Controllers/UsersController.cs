@@ -13,7 +13,7 @@ using SalesManager.Models;
 namespace SalesManager.Controllers
 {
     [Authorize(Roles = "Power")]
-    [EnableCors("bStudioApps")]
+    //[EnableCors("bStudioApps")]
     public class UsersController : Controller
     {
         readonly ApplicationDbContext db;

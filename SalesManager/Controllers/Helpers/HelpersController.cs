@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SalesManager.Controllers.Helpers
 {
-    [Authorize(Roles = "Power, Cashier")]
+    //[Authorize(Roles = "Power, Cashier")]
     [EnableCors("bStudioApps")]
     public class HelpersController : Controller
     {

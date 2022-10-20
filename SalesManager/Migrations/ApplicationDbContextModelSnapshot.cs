@@ -186,7 +186,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 1,
-                            DateAdded = new DateTime(2021, 9, 7, 14, 28, 9, 410, DateTimeKind.Utc).AddTicks(1620),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 717, DateTimeKind.Utc).AddTicks(7499),
                             Group = "Consoles",
                             ItemName = "Playstation 2",
                             MinimumStock = 20
@@ -194,7 +194,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 2,
-                            DateAdded = new DateTime(2021, 9, 7, 14, 28, 9, 410, DateTimeKind.Utc).AddTicks(5929),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1933),
                             Group = "Consoles",
                             ItemName = "XBox One",
                             MinimumStock = 10
@@ -202,7 +202,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 3,
-                            DateAdded = new DateTime(2021, 9, 7, 14, 28, 9, 410, DateTimeKind.Utc).AddTicks(5948),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1967),
                             Group = "Consoles",
                             ItemName = "XBox 360",
                             MinimumStock = 15
@@ -210,7 +210,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 4,
-                            DateAdded = new DateTime(2021, 9, 7, 14, 28, 9, 410, DateTimeKind.Utc).AddTicks(5953),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1977),
                             Group = "Consoles",
                             ItemName = "XBox",
                             MinimumStock = 5
@@ -218,7 +218,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 5,
-                            DateAdded = new DateTime(2021, 9, 7, 14, 28, 9, 410, DateTimeKind.Utc).AddTicks(5958),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1986),
                             Group = "Contollers",
                             ItemName = "XBox One Wired Controller",
                             MinimumStock = 10
@@ -226,7 +226,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 6,
-                            DateAdded = new DateTime(2021, 9, 7, 14, 28, 9, 410, DateTimeKind.Utc).AddTicks(5969),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(2012),
                             Group = "Contollers",
                             ItemName = "XBox 360 Wireless Controller",
                             MinimumStock = 10
@@ -287,8 +287,16 @@ namespace SalesManager.Migrations
                     b.Property<DateTime>("DatePaid")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("ExpectedDate")
+                        .HasColumnType("date");
+
                     b.Property<decimal>("MobileMoney")
                         .HasColumnType("money");
+
+                    b.Property<string>("SalesType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("Telephone")
                         .HasMaxLength(10)

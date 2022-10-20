@@ -39,6 +39,15 @@ namespace SalesManager.Model
         [Range(0, double.MaxValue)]
         public decimal Total { get; set; }
 
+        [Column(TypeName = "varchar(30)")]
+        [Required]
+        [DefaultValue("Outright Purchase")]
+        [StringLength(30, MinimumLength = 5)]
+        public string SalesType { get; set; }
+
+        [Column(TypeName = "date")]
+        public DateTime? ExpectedDate { get; set; }
+
         public DateTime DatePaid { get; set; }
 
         public virtual ICollection<Sales> Sales { get; set; }

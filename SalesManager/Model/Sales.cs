@@ -58,6 +58,9 @@ namespace SalesManager.Model
         [StringLength(75, MinimumLength = 3)]
         public string Customer { get; set; }
 
+        [Required]
+        [StringLength(30, MinimumLength = 5)]
+        public string SalesType { get; set; }
 
         [Column(TypeName = "money")]
         [Range(0, double.MaxValue)]

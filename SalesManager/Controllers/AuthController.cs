@@ -36,6 +36,7 @@ namespace SalesManager.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginVm user)
         {
+            return Ok();
             if (!ModelState.IsValid)
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
             var _user = await _userManager.FindByNameAsync(user.UserName);

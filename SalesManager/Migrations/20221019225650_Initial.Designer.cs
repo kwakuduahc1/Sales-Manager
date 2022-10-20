@@ -10,8 +10,8 @@ using SalesManager.Model;
 namespace SalesManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210828161713_SalesCosts")]
-    partial class SalesCosts
+    [Migration("20221019225650_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -188,7 +188,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 1,
-                            DateAdded = new DateTime(2021, 8, 28, 16, 17, 12, 656, DateTimeKind.Utc).AddTicks(6300),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 717, DateTimeKind.Utc).AddTicks(7499),
                             Group = "Consoles",
                             ItemName = "Playstation 2",
                             MinimumStock = 20
@@ -196,7 +196,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 2,
-                            DateAdded = new DateTime(2021, 8, 28, 16, 17, 12, 656, DateTimeKind.Utc).AddTicks(8222),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1933),
                             Group = "Consoles",
                             ItemName = "XBox One",
                             MinimumStock = 10
@@ -204,7 +204,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 3,
-                            DateAdded = new DateTime(2021, 8, 28, 16, 17, 12, 656, DateTimeKind.Utc).AddTicks(8230),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1967),
                             Group = "Consoles",
                             ItemName = "XBox 360",
                             MinimumStock = 15
@@ -212,7 +212,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 4,
-                            DateAdded = new DateTime(2021, 8, 28, 16, 17, 12, 656, DateTimeKind.Utc).AddTicks(8233),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1977),
                             Group = "Consoles",
                             ItemName = "XBox",
                             MinimumStock = 5
@@ -220,7 +220,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 5,
-                            DateAdded = new DateTime(2021, 8, 28, 16, 17, 12, 656, DateTimeKind.Utc).AddTicks(8236),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1986),
                             Group = "Contollers",
                             ItemName = "XBox One Wired Controller",
                             MinimumStock = 10
@@ -228,7 +228,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 6,
-                            DateAdded = new DateTime(2021, 8, 28, 16, 17, 12, 656, DateTimeKind.Utc).AddTicks(8245),
+                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(2012),
                             Group = "Contollers",
                             ItemName = "XBox 360 Wireless Controller",
                             MinimumStock = 10
@@ -267,6 +267,49 @@ namespace SalesManager.Migrations
                             PaymentTypesID = (byte)3,
                             PaymentType = "Vodafone Cash"
                         });
+                });
+
+            modelBuilder.Entity("SalesManager.Model.Payments", b =>
+                {
+                    b.Property<string>("Receipt")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("CanContact")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Cash")
+                        .HasColumnType("money");
+
+                    b.Property<string>("Customer")
+                        .IsRequired()
+                        .HasMaxLength(75)
+                        .HasColumnType("nvarchar(75)");
+
+                    b.Property<DateTime>("DatePaid")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpectedDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("MobileMoney")
+                        .HasColumnType("money");
+
+                    b.Property<string>("SalesType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("Telephone")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("money");
+
+                    b.HasKey("Receipt");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("SalesManager.Model.Prices", b =>
@@ -308,9 +351,6 @@ namespace SalesManager.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("CanContact")
-                        .HasColumnType("bit");
-
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -318,11 +358,6 @@ namespace SalesManager.Migrations
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("money");
-
-                    b.Property<string>("Customer")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)");
 
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("datetime2");
@@ -334,12 +369,9 @@ namespace SalesManager.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Receipt")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Telephone")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(30)
@@ -348,6 +380,8 @@ namespace SalesManager.Migrations
                     b.HasKey("SalesID");
 
                     b.HasIndex("ItemsID");
+
+                    b.HasIndex("Receipt");
 
                     b.ToTable("Sales");
                 });
@@ -536,7 +570,15 @@ namespace SalesManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SalesManager.Model.Payments", "Payments")
+                        .WithMany("Sales")
+                        .HasForeignKey("Receipt")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Items");
+
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("SalesManager.Model.Stockings", b =>
@@ -557,6 +599,11 @@ namespace SalesManager.Migrations
                     b.Navigation("Sales");
 
                     b.Navigation("Stockings");
+                });
+
+            modelBuilder.Entity("SalesManager.Model.Payments", b =>
+                {
+                    b.Navigation("Sales");
                 });
 #pragma warning restore 612, 618
         }

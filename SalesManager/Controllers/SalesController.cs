@@ -100,12 +100,13 @@ namespace SalesManager.Controllers
                 CanContact = tran.CanContact,
                 Customer = tran.Customer,
                 Telephone = tran.Telephone,
+                SalesType = tran.SalesType,
                 Total = tran.MobileMoney + tran.Cash,
                 Sales = new List<Sales>()
             };
             tran.Sales.ForEach(x =>
             {
-                var price = db.Prices.Where(x => x.ItemsID == x.ItemsID).OrderByDescending(x => x.DateSet).FirstOrDefault();
+                var price = db.Prices.Where(t => t.ItemsID == x.ItemsID).OrderByDescending(t => t.DateSet).FirstOrDefault();
                 payments.Sales.Add(new Sales
                 {
                     DateAdded = payments.DatePaid,

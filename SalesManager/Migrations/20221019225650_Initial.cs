@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Dapper;
 
 namespace SalesManager.Migrations
 {
@@ -64,12 +65,32 @@ namespace SalesManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    Receipt = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Cash = table.Column<decimal>(type: "money", nullable: false),
+                    MobileMoney = table.Column<decimal>(type: "money", nullable: false),
+                    Customer = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false),
+                    Telephone = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    CanContact = table.Column<bool>(type: "bit", nullable: false),
+                    Total = table.Column<decimal>(type: "money", nullable: false),
+                    SalesType = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
+                    ExpectedDate = table.Column<DateTime>(type: "date", nullable: true),
+                    DatePaid = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.Receipt);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PaymentTypes",
                 columns: table => new
                 {
                     PaymentTypesID = table.Column<byte>(type: "tinyint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PaymentType = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true)
+                    PaymentType = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -188,7 +209,7 @@ namespace SalesManager.Migrations
                 {
                     PricesID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "money", nullable: false),
                     ItemsID = table.Column<int>(type: "int", nullable: false),
                     DateSet = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Setter = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
@@ -206,33 +227,6 @@ namespace SalesManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sales",
-                columns: table => new
-                {
-                    SalesID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Customer = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false),
-                    ItemsID = table.Column<int>(type: "int", nullable: false),
-                    Telephone = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    Quantity = table.Column<short>(type: "smallint", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
-                    CanContact = table.Column<bool>(type: "bit", nullable: false),
-                    Receipt = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sales", x => x.SalesID);
-                    table.ForeignKey(
-                        name: "FK_Sales_Items_ItemsID",
-                        column: x => x.ItemsID,
-                        principalTable: "Items",
-                        principalColumn: "ItemsID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Stockings",
                 columns: table => new
                 {
@@ -240,7 +234,9 @@ namespace SalesManager.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ItemsID = table.Column<int>(type: "int", nullable: false),
                     DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateBought = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Quantity = table.Column<short>(type: "smallint", nullable: false),
+                    Receipt = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Source = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false),
                     UnitCost = table.Column<double>(type: "float", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
@@ -255,6 +251,60 @@ namespace SalesManager.Migrations
                         principalTable: "Items",
                         principalColumn: "ItemsID",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sales",
+                columns: table => new
+                {
+                    SalesID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantity = table.Column<short>(type: "smallint", nullable: false),
+                    ItemsID = table.Column<int>(type: "int", nullable: false),
+                    Cost = table.Column<decimal>(type: "money", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    Receipt = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sales", x => x.SalesID);
+                    table.ForeignKey(
+                        name: "FK_Sales_Items_ItemsID",
+                        column: x => x.ItemsID,
+                        principalTable: "Items",
+                        principalColumn: "ItemsID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Sales_Payments_Receipt",
+                        column: x => x.Receipt,
+                        principalTable: "Payments",
+                        principalColumn: "Receipt",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Items",
+                columns: new[] { "ItemsID", "DateAdded", "Group", "ItemName", "MinimumStock" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2022, 10, 19, 22, 56, 49, 717, DateTimeKind.Utc).AddTicks(7499), "Consoles", "Playstation 2", 20 },
+                    { 2, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1933), "Consoles", "XBox One", 10 },
+                    { 3, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1967), "Consoles", "XBox 360", 15 },
+                    { 4, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1977), "Consoles", "XBox", 5 },
+                    { 5, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1986), "Contollers", "XBox One Wired Controller", 10 },
+                    { 6, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(2012), "Contollers", "XBox 360 Wireless Controller", 10 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PaymentTypes",
+                columns: new[] { "PaymentTypesID", "PaymentType" },
+                values: new object[,]
+                {
+                    { (byte)1, "Cash" },
+                    { (byte)2, "Mobile Money" },
+                    { (byte)3, "Vodafone Cash" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -307,6 +357,11 @@ namespace SalesManager.Migrations
                 column: "ItemsID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Sales_Receipt",
+                table: "Sales",
+                column: "Receipt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stockings_ItemsID",
                 table: "Stockings",
                 column: "ItemsID");
@@ -346,6 +401,9 @@ namespace SalesManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Payments");
 
             migrationBuilder.DropTable(
                 name: "Items");

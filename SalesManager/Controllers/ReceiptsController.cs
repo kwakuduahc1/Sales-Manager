@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace SalesManager.Controllers
 {
     [EnableCors("bStudioApps")]
-    [Authorize(Roles = "Power, Stocker")]
+    //[Authorize(Roles = "Power, Stocker")]
     public class ReceiptsController : Controller
     {
         private readonly ApplicationDbContext db;

@@ -74,10 +74,10 @@ namespace SalesManager
             services.AddCors(options =>
             {
                 options.AddPolicy("bStudioApps",
-                    x => x.AllowAnyOrigin()
-                    .WithHeaders("Content-Type", "Accept", "Origin", "Access-Control-Allow-Origin", "Authorization", "X-XSRF-TOKEN", "XSRF-TOKEN", "enctype", "info")
-                    .DisallowCredentials()
-                    .WithMethods("GET", "POST", "OPTIONS"));
+        x => x.WithOrigins("http://localhost:4200")
+        .WithHeaders("Content-Type", "Accept", "Origin", "Authorization", "X-XSRF-TOKEN", "XSRF-TOKEN", "enctype", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
+        .AllowAnyMethod()
+            .AllowCredentials());
             });
             services.AddAntiforgery(o =>
             {

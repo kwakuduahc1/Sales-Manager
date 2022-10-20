@@ -12,7 +12,7 @@ using SalesManager.Model;
 namespace SalesManager.Controllers
 {
     [Authorize(Roles = "Power")]
-    [EnableCors("bStudioApps")]
+    //[EnableCors("bStudioApps")]
     public class RolesController : Controller
     {
         private readonly ApplicationDbContext db;
