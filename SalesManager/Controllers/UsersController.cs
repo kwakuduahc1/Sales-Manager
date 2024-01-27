@@ -12,19 +12,12 @@ using SalesManager.Models;
 
 namespace SalesManager.Controllers
 {
-    [Authorize(Roles = "Power")]
-    //[EnableCors("bStudioApps")]
-    public class UsersController : Controller
+    //[Authorize(Roles = "Power")]
+    [EnableCors("bStudioApps")]
+    public class UsersController(UserManager<ApplicationUser> userManager, DbContextOptions<ApplicationDbContext> options) : Controller
     {
-        readonly ApplicationDbContext db;
-        private readonly UserManager<ApplicationUser> _userManager;
-
-        public UsersController(UserManager<ApplicationUser> userManager, DbContextOptions<ApplicationDbContext> options)
-        {
-            db = new ApplicationDbContext(options);
-            _userManager = userManager;
-
-        }
+        readonly ApplicationDbContext db = new ApplicationDbContext(options);
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
 
         [HttpGet]
         public async Task<IActionResult> Find(string id)
@@ -32,13 +25,16 @@ namespace SalesManager.Controllers
             var user = await db.ApplicationUsers.Where(x => x.Id == id).Select(x => new { usersID = x.Id, x.UserName }).SingleOrDefaultAsync();
             return user == null ? NotFound() : Ok(user);
         }
+
+
         [HttpGet]
         public async Task<IEnumerable> List()
         {
             return await db.ApplicationUsers.Select(x => new
             {
                 x.UserName,
-                x.Id
+                x.Id,
+                x.FullName
             }).ToListAsync();
         }
 
@@ -69,18 +65,17 @@ namespace SalesManager.Controllers
             return Accepted();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> RemoveUser([FromBody] URoles urole)
+        [HttpDelete()]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> RemoveUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(urole.ID);
+            var req = Request;
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
                 return BadRequest(new { Message = "The user was not found" });
             await _userManager.DeleteAsync(user);
             return Accepted();
         }
     }
-}
-
-namespace SalesManager.Models
-{
 }

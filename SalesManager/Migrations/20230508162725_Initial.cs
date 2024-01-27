@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Dapper;
+
+#nullable disable
 
 namespace SalesManager.Migrations
 {
@@ -204,29 +205,6 @@ namespace SalesManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Prices",
-                columns: table => new
-                {
-                    PricesID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Price = table.Column<decimal>(type: "money", nullable: false),
-                    ItemsID = table.Column<int>(type: "int", nullable: false),
-                    DateSet = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Setter = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
-                    Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Prices", x => x.PricesID);
-                    table.ForeignKey(
-                        name: "FK_Prices_Items_ItemsID",
-                        column: x => x.ItemsID,
-                        principalTable: "Items",
-                        principalColumn: "ItemsID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Stockings",
                 columns: table => new
                 {
@@ -251,6 +229,26 @@ namespace SalesManager.Migrations
                         principalTable: "Items",
                         principalColumn: "ItemsID",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Units",
+                columns: table => new
+                {
+                    UnitsID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PricesID = table.Column<int>(type: "int", nullable: false),
+                    Unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ItemsID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Units", x => x.UnitsID);
+                    table.ForeignKey(
+                        name: "FK_Units_Items_ItemsID",
+                        column: x => x.ItemsID,
+                        principalTable: "Items",
+                        principalColumn: "ItemsID");
                 });
 
             migrationBuilder.CreateTable(
@@ -284,17 +282,40 @@ namespace SalesManager.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Prices",
+                columns: table => new
+                {
+                    PricesID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Price = table.Column<decimal>(type: "money", nullable: false),
+                    UnitsID = table.Column<int>(type: "int", nullable: false),
+                    DateSet = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Setter = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Prices", x => x.PricesID);
+                    table.ForeignKey(
+                        name: "FK_Prices_Units_UnitsID",
+                        column: x => x.UnitsID,
+                        principalTable: "Units",
+                        principalColumn: "UnitsID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Items",
                 columns: new[] { "ItemsID", "DateAdded", "Group", "ItemName", "MinimumStock" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2022, 10, 19, 22, 56, 49, 717, DateTimeKind.Utc).AddTicks(7499), "Consoles", "Playstation 2", 20 },
-                    { 2, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1933), "Consoles", "XBox One", 10 },
-                    { 3, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1967), "Consoles", "XBox 360", 15 },
-                    { 4, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1977), "Consoles", "XBox", 5 },
-                    { 5, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1986), "Contollers", "XBox One Wired Controller", 10 },
-                    { 6, new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(2012), "Contollers", "XBox 360 Wireless Controller", 10 }
+                    { 1, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4350), "Consoles", "Playstation 2", 20 },
+                    { 2, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4361), "Consoles", "XBox One", 10 },
+                    { 3, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4365), "Consoles", "XBox 360", 15 },
+                    { 4, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4368), "Consoles", "XBox", 5 },
+                    { 5, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4371), "Contollers", "XBox One Wired Controller", 10 },
+                    { 6, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4377), "Contollers", "XBox 360 Wireless Controller", 10 }
                 });
 
             migrationBuilder.InsertData(
@@ -347,9 +368,9 @@ namespace SalesManager.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Prices_ItemsID",
+                name: "IX_Prices_UnitsID",
                 table: "Prices",
-                column: "ItemsID");
+                column: "UnitsID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sales_ItemsID",
@@ -364,6 +385,11 @@ namespace SalesManager.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Stockings_ItemsID",
                 table: "Stockings",
+                column: "ItemsID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Units_ItemsID",
+                table: "Units",
                 column: "ItemsID");
         }
 
@@ -401,6 +427,9 @@ namespace SalesManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Units");
 
             migrationBuilder.DropTable(
                 name: "Payments");

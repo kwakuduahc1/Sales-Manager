@@ -33,30 +33,14 @@ namespace SalesManager.Areas.Stores.Controllers
         [HttpGet]
         public async Task<IEnumerable> List() => await db.Items.ToListAsync();
 
-        [HttpGet]
-        public async Task<IEnumerable> Prices() => await db.Items.Where(x => x.Prices.Count > 0).Select(x => new { x.ItemName, x.MinimumStock, x.ItemsID, x.Prices.OrderBy(v=>v.DateSet).LastOrDefault().Price }).ToListAsync();
+        //[HttpGet]
+        //public async Task<IEnumerable> Prices() => await db.Items.Where(x => x.Prices.Count > 0).Select(x => new { x.ItemName, x.MinimumStock, x.ItemsID, x.Prices.OrderBy(v=>v.DateSet).LastOrDefault().Price }).ToListAsync();
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IEnumerable> ToSell()
         {
-            string qry = @"select i.itemsID, i.[group], i.itemName, ISNULL(p.Price, 0) price, ISNULL(st.Stock, 0) - ISNULL(sl.Sales, 0) balance
-                            from Items i 
-                            outer apply(
-	                            select top 1 Price 
-	                            from Prices p 
-	                            where p.ItemsID = i.ItemsID
-	                            order by DateSet
-                            )p
-                            outer apply(
-	                            select sum(s.Quantity) Stock
-	                            from Stockings s 
-	                            where s.ItemsID = i.ItemsID
-                            )st
-                            outer apply (
-	                            select SUM(sl.Quantity) Sales
-	                            from Sales sl where sl.ItemsID = i.ItemsID
-                            )sl";
+            string qry = @"EXECUTE [dbo].[spItemsToSell]";
             return await db.Database.GetDbConnection().QueryAsync<SellingItems>(qry);
         }
 

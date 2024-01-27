@@ -7,19 +7,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SalesManager.Model;
 
+#nullable disable
+
 namespace SalesManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221019225650_Initial")]
-    partial class Initial
+    [Migration("20230508221033_Supps")]
+    partial class Supps
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.7")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.16")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -45,15 +48,16 @@ namespace SalesManager.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -69,15 +73,16 @@ namespace SalesManager.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -93,7 +98,7 @@ namespace SalesManager.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -115,7 +120,7 @@ namespace SalesManager.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -130,7 +135,7 @@ namespace SalesManager.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -149,15 +154,16 @@ namespace SalesManager.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("SalesManager.Model.Items", b =>
                 {
                     b.Property<int>("ItemsID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemsID"), 1L, 1);
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
@@ -188,7 +194,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 1,
-                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 717, DateTimeKind.Utc).AddTicks(7499),
+                            DateAdded = new DateTime(2023, 5, 8, 22, 10, 32, 361, DateTimeKind.Utc).AddTicks(7746),
                             Group = "Consoles",
                             ItemName = "Playstation 2",
                             MinimumStock = 20
@@ -196,7 +202,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 2,
-                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1933),
+                            DateAdded = new DateTime(2023, 5, 8, 22, 10, 32, 361, DateTimeKind.Utc).AddTicks(7770),
                             Group = "Consoles",
                             ItemName = "XBox One",
                             MinimumStock = 10
@@ -204,7 +210,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 3,
-                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1967),
+                            DateAdded = new DateTime(2023, 5, 8, 22, 10, 32, 361, DateTimeKind.Utc).AddTicks(7781),
                             Group = "Consoles",
                             ItemName = "XBox 360",
                             MinimumStock = 15
@@ -212,7 +218,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 4,
-                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1977),
+                            DateAdded = new DateTime(2023, 5, 8, 22, 10, 32, 361, DateTimeKind.Utc).AddTicks(7789),
                             Group = "Consoles",
                             ItemName = "XBox",
                             MinimumStock = 5
@@ -220,7 +226,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 5,
-                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(1986),
+                            DateAdded = new DateTime(2023, 5, 8, 22, 10, 32, 361, DateTimeKind.Utc).AddTicks(7795),
                             Group = "Contollers",
                             ItemName = "XBox One Wired Controller",
                             MinimumStock = 10
@@ -228,44 +234,10 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 6,
-                            DateAdded = new DateTime(2022, 10, 19, 22, 56, 49, 718, DateTimeKind.Utc).AddTicks(2012),
+                            DateAdded = new DateTime(2023, 5, 8, 22, 10, 32, 361, DateTimeKind.Utc).AddTicks(7805),
                             Group = "Contollers",
                             ItemName = "XBox 360 Wireless Controller",
                             MinimumStock = 10
-                        });
-                });
-
-            modelBuilder.Entity("SalesManager.Model.PaymentTypes", b =>
-                {
-                    b.Property<byte>("PaymentTypesID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("PaymentType")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.HasKey("PaymentTypesID");
-
-                    b.ToTable("PaymentTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            PaymentTypesID = (byte)1,
-                            PaymentType = "Cash"
-                        },
-                        new
-                        {
-                            PaymentTypesID = (byte)2,
-                            PaymentType = "Mobile Money"
-                        },
-                        new
-                        {
-                            PaymentTypesID = (byte)3,
-                            PaymentType = "Vodafone Cash"
                         });
                 });
 
@@ -312,12 +284,48 @@ namespace SalesManager.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("SalesManager.Model.PaymentTypes", b =>
+                {
+                    b.Property<byte>("PaymentTypesID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<byte>("PaymentTypesID"), 1L, 1);
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.HasKey("PaymentTypesID");
+
+                    b.ToTable("PaymentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            PaymentTypesID = (byte)1,
+                            PaymentType = "Cash"
+                        },
+                        new
+                        {
+                            PaymentTypesID = (byte)2,
+                            PaymentType = "Mobile Money"
+                        },
+                        new
+                        {
+                            PaymentTypesID = (byte)3,
+                            PaymentType = "Vodafone Cash"
+                        });
+                });
+
             modelBuilder.Entity("SalesManager.Model.Prices", b =>
                 {
                     b.Property<int>("PricesID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PricesID"), 1L, 1);
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
@@ -327,9 +335,6 @@ namespace SalesManager.Migrations
                     b.Property<DateTime>("DateSet")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ItemsID")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("money");
 
@@ -337,9 +342,12 @@ namespace SalesManager.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<int>("UnitsID")
+                        .HasColumnType("int");
+
                     b.HasKey("PricesID");
 
-                    b.HasIndex("ItemsID");
+                    b.HasIndex("UnitsID");
 
                     b.ToTable("Prices");
                 });
@@ -348,8 +356,9 @@ namespace SalesManager.Migrations
                 {
                     b.Property<long>("SalesID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("SalesID"), 1L, 1);
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
@@ -390,8 +399,9 @@ namespace SalesManager.Migrations
                 {
                     b.Property<long>("StockingsID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("StockingsID"), 1L, 1);
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
@@ -415,10 +425,8 @@ namespace SalesManager.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)");
+                    b.Property<int>("SuppliersID")
+                        .HasColumnType("int");
 
                     b.Property<double>("UnitCost")
                         .HasColumnType("float");
@@ -431,7 +439,61 @@ namespace SalesManager.Migrations
 
                     b.HasIndex("ItemsID");
 
+                    b.HasIndex("SuppliersID");
+
                     b.ToTable("Stockings");
+                });
+
+            modelBuilder.Entity("SalesManager.Model.Suppliers", b =>
+                {
+                    b.Property<int>("SuppliersID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SuppliersID"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.HasKey("SuppliersID");
+
+                    b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("SalesManager.Model.Units", b =>
+                {
+                    b.Property<int>("UnitsID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UnitsID"), 1L, 1);
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ItemsID")
+                        .HasColumnType("int");
+
+                    b.Property<float>("Quantity")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("UnitsID");
+
+                    b.HasIndex("ItemsID");
+
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("SalesManager.Models.ApplicationUser", b =>
@@ -497,7 +559,7 @@ namespace SalesManager.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -553,13 +615,13 @@ namespace SalesManager.Migrations
 
             modelBuilder.Entity("SalesManager.Model.Prices", b =>
                 {
-                    b.HasOne("SalesManager.Model.Items", "Items")
+                    b.HasOne("SalesManager.Model.Units", "Units")
                         .WithMany("Prices")
-                        .HasForeignKey("ItemsID")
+                        .HasForeignKey("UnitsID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Items");
+                    b.Navigation("Units");
                 });
 
             modelBuilder.Entity("SalesManager.Model.Sales", b =>
@@ -589,13 +651,30 @@ namespace SalesManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SalesManager.Model.Suppliers", "Suppliers")
+                        .WithMany("Stockings")
+                        .HasForeignKey("SuppliersID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Items");
+
+                    b.Navigation("Suppliers");
+                });
+
+            modelBuilder.Entity("SalesManager.Model.Units", b =>
+                {
+                    b.HasOne("SalesManager.Model.Items", "Items")
+                        .WithMany()
+                        .HasForeignKey("ItemsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Items");
                 });
 
             modelBuilder.Entity("SalesManager.Model.Items", b =>
                 {
-                    b.Navigation("Prices");
-
                     b.Navigation("Sales");
 
                     b.Navigation("Stockings");
@@ -604,6 +683,16 @@ namespace SalesManager.Migrations
             modelBuilder.Entity("SalesManager.Model.Payments", b =>
                 {
                     b.Navigation("Sales");
+                });
+
+            modelBuilder.Entity("SalesManager.Model.Suppliers", b =>
+                {
+                    b.Navigation("Stockings");
+                });
+
+            modelBuilder.Entity("SalesManager.Model.Units", b =>
+                {
+                    b.Navigation("Prices");
                 });
 #pragma warning restore 612, 618
         }

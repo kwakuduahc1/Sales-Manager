@@ -14,26 +14,27 @@ using System.Net;
 using SalesManager.Model;
 using Microsoft.EntityFrameworkCore;
 using SalesManager.Models;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace SalesManager
 {
-    public class Startup
+    public class Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-        {
-            Configuration = configuration;
-            Env = environment;
-        }
-
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Env { get; set; }
+        public IConfiguration Configuration { get; } = configuration;
+        public IWebHostEnvironment Env { get; set; } = environment;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
             services.AddSingleton<AppFeatures>();
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                //options.EnableSensitiveDataLogging();
+                //options.LogTo(x=> Console.WriteLine(x));
+                //options.log
+            });
             services.AddIdentity<ApplicationUser, IdentityRole>(x =>
             {
                 x.SignIn.RequireConfirmedAccount = false;
@@ -45,7 +46,8 @@ namespace SalesManager
                 x.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
+            var audience = Configuration.GetSection("AppFeatures").GetSection("Audience").Value;
+            Console.WriteLine(audience);
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -60,10 +62,10 @@ namespace SalesManager
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppFeatures").GetSection("Key").Value)),
                     ValidateIssuer = true,
                     RequireExpirationTime = true,
-                    ValidateAudience = false,
+                    ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidIssuer = Configuration.GetSection("AppFeatures").GetSection("Issuer").Value,
-                    ValidAudience = Configuration.GetSection("AppFeatures").GetSection("Audience").Value
+                    ValidAudience = audience // Configuration.GetSection("AppFeatures").GetSection("Audience").Value
                 };
             });
             services.AddDataProtection();
@@ -73,31 +75,35 @@ namespace SalesManager
             });
             services.AddCors(options =>
             {
-                options.AddPolicy("bStudioApps",
-        x => x.WithOrigins("http://localhost:4200")
-        .WithHeaders("Content-Type", "Accept", "Origin", "Authorization", "X-XSRF-TOKEN", "XSRF-TOKEN", "enctype", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
-        .AllowAnyMethod()
-            .AllowCredentials());
+                options.AddPolicy("bStudioApps", x =>
+                x.WithOrigins("http://localhost:4200")
+                .WithHeaders("Content-Type", "Accept", "Origin", "Authorization", "X-XSRF-TOKEN", "enctype", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
+                .WithMethods("GET", "POST", "PUT", "OPTIONS", "DELETE")
+                .AllowCredentials());
             });
-            services.AddAntiforgery(o =>
-            {
-                o.HeaderName = "X-XSRF-TOKEN";
-                o.Cookie = new CookieBuilder
-                {
-                    Expiration = TimeSpan.FromDays(7),
-                    IsEssential = true,
-                    MaxAge = TimeSpan.FromDays(7),
-                    HttpOnly = false,
-                    Name = "XSRF-TOKEN",
-                    SameSite = SameSiteMode.Strict,
-                };
-            });
+            services.AddLogging(x => x.AddConsole());
             services.AddSignalR(x => x.KeepAliveInterval = TimeSpan.FromSeconds(10));
+            services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
+            //services.AddAntiforgery(o =>
+            //{
+            //    o.HeaderName = "X-XSRF-TOKEN";
+            //    o.Cookie = new CookieBuilder
+            //    {
+            //        Expiration = TimeSpan.FromDays(7),
+            //        IsEssential = true,
+            //        MaxAge = TimeSpan.FromDays(7),
+            //        HttpOnly = false,
+            //        Name = "XSRF-TOKEN",
+            //        SameSite = SameSiteMode.None,
+            //    };
+            //});
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IAntiforgery antiforgery)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IAntiforgery antiforgery, ILoggerFactory loggerFactory)
         {
+            var logger = loggerFactory.CreateLogger("ValidRequestMW");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -108,28 +114,32 @@ namespace SalesManager
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            //app.Use((context, next) =>
-            //{
-            //    string path = context.Request.Path.Value;
-            //    if (context is null)
-            //        antiforgery.SetCookieTokenAndHeader(context);
-            //    var token = antiforgery.GetAndStoreTokens(context);
-            //    context.Response.Cookies.Append("XSRF-TOKEN", token.RequestToken
-            //        //new CookieOptions
-            //        //{
-            //        //    IsEssential = true,
-            //        //    MaxAge = TimeSpan.FromDays(7),
-            //        //    HttpOnly = false,
-            //        //    SameSite = SameSiteMode.Strict,
-            //        //}
-            //        );
-            //    return next();
-            //});
+            app.UseAuthentication();
+            app.Use((context, next) =>
+            {
+                string path = context.Request.Path.Value;
+                if (
+                    string.Equals(path, "/", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(path, "/index.html", StringComparison.OrdinalIgnoreCase))
+                {
+                    antiforgery.SetCookieTokenAndHeader(context);
+                    var token = antiforgery.GetAndStoreTokens(context);
+                    var res = antiforgery.ValidateRequestAsync(context);
+                    if (res.IsFaulted)
+                    {
+                        Console.WriteLine($"Exception message is {res.Exception.Message}");
+                    }
+                    context.Response.Cookies.Append("XSRF-TOKEN", token.RequestToken);
+                }
+                return next(context);
+
+            });
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            //app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("bStuioApps");
-            app.UseAuthentication();
+            app.UseAntiforgery();
+            //app.EnsureAntiforgeryTokenPresentOnPosts();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

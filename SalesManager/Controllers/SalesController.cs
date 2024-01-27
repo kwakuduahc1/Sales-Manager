@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Dapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SalesManager.Model;
@@ -24,29 +25,47 @@ namespace SalesManager.Controllers
         {
             x.DateAdded,
             x.Concurrency,
-            x.Items.ItemName,
-            x.ItemsID,
+            //x.Prices.ItemName,
+            x.PricesID,
             x.Quantity,
             x.SalesID
         }).ToListAsync();
 
+        /*
+         * 
+         * const string qry = "spSalesLedger";
+            return await db.Database.GetDbConnection().QueryAsync<SalesLedgerVm>(qry, param: new { start, end }, commandType: CommandType.StoredProcedure);
+
+        */
+
         [HttpGet]
-        public async Task<IActionResult> SalesByDate(DateTime start, DateTime end)
+        public async Task<IEnumerable> SalesByDate(DateTime start, DateTime end)
         {
-            var recs = await db.Payments.Where(x => x.DatePaid.Date >= start.Date && x.DatePaid.Date <= end.Date).Include(x => x.Sales).Select(v => new ReceiptVm
+            const string qry = "spSalesLedger";
+            var dset = await db.Database.GetDbConnection().QueryAsync<SalesLedgerVm>(qry, param: new { start = start.Date, end = end.Date }, commandType: CommandType.StoredProcedure);
+            var recs = dset.GroupBy(v => new
             {
-                Cash = v.Cash,
-                MobileMoney = v.MobileMoney,
-                Receipt = v.Receipt,
-                DatePaid = v.DatePaid.Date
-            }).ToListAsync();
+                v.Total,
+                v.Receipt,
+                DatePaid = v.DatePaid.Date,
+                v.Customer,
+                v.Telephone
+            }, (k, v) => new ReceiptVm
+            {
+                Telephone = k.Telephone,
+                Customer = k.Customer,
+                Receipt = k.Receipt,
+                Total = k.Total,
+                DatePaid = k.DatePaid,
+                Sales = []
+            }).ToList();
             if (recs.Count < 1)
-                return NotFound(new { Message = "No transactions were found the dates provided" });
+                return null; // NotFound(new { Message = "No transactions were found the dates provided" });
             recs.ForEach(x =>
             {
-                x.Sales = db.Sales.Where(t => t.Receipt == x.Receipt).Select(t => new SalesVm { ItemsID = t.ItemsID, Quantity = t.Quantity, ItemName = t.Items.ItemName, Cost = t.Cost }).ToList();
+                x.Sales = dset.Where(t => t.Receipt == x.Receipt).Select(t => new SalesVm { ItemsID = t.PricesID, Quantity = t.Quantity, ItemName = t.ItemName, Cost = t.Cost }).ToList();
             });
-            return Ok(recs.OrderByDescending(x => x.DatePaid));
+            return recs;
         }
 
         [HttpGet]
@@ -61,7 +80,11 @@ namespace SalesManager.Controllers
                 x.Customer,
                 x.DatePaid,
                 x.Cash,
-                Sales = x.Sales.Select(t => new { t.Quantity, t.Items.ItemName, t.Cost })
+                Sales = x.Sales.Select(t => new
+                {
+                    t.Quantity, /*t.Prices.ItemName*/
+                    t.Cost
+                })
             }).SingleOrDefaultAsync();
             return rec is null ? NotFound(new { Message = "Receipt not found" }) : Ok(rec);
         }
@@ -69,15 +92,19 @@ namespace SalesManager.Controllers
         [HttpGet]
         public async Task<IEnumerable> Balances() => await db.Items.Select(x => new { x.ItemName, x.ItemsID, x.Group, Quantity = x.Stockings.Sum(t => t.Quantity) }).ToListAsync();
 
+
         [HttpGet]
-        public async Task<IEnumerable> Recent() => await db.Sales.OrderByDescending(x => x.DateAdded).Take(20).Select(x => new
+        public async Task<IEnumerable> Recent()
         {
-            x.Items.ItemName,
-            x.ItemsID,
-            x.Cost,
-            x.Quantity,
-            x.Payments.Customer
-        }).ToListAsync();
+            const string qry = @"SELECT   TOP (20) s.SalesID, s.Quantity, s.Cost, s.Receipt, s.PricesID, p.Price, p.Setter, u.Unit, i.ItemsID, i.ItemName, s.DateAdded
+                                FROM         Sales AS s INNER JOIN
+                                                         Prices AS p ON p.PricesID = s.PricesID INNER JOIN
+                                                         Units AS u ON u.UnitsID = p.UnitsID INNER JOIN
+                                                         Items AS i ON i.ItemsID = u.ItemsID
+                                ORDER BY s.DateAdded DESC";
+
+            return await db.Database.GetDbConnection().QueryAsync<RecentSalesVm>(qry);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Find(int id)
@@ -106,15 +133,15 @@ namespace SalesManager.Controllers
             };
             tran.Sales.ForEach(x =>
             {
-                var price = db.Prices.Where(t => t.ItemsID == x.ItemsID).OrderByDescending(t => t.DateSet).FirstOrDefault();
+                //var price = db.Prices.Find(x.PricesID);
                 payments.Sales.Add(new Sales
                 {
                     DateAdded = payments.DatePaid,
-                    ItemsID = x.ItemsID,
+                    PricesID = x.PricesID,
                     Quantity = x.Quantity,
-                    Cost = x.Quantity * price.Price,
+                    Cost = x.Cost,
                     Receipt = payments.Receipt,
-                    UserName = User.Identity.Name,
+                    UserName = User.Identity.Name
                 });
             });
             db.Add(payments);

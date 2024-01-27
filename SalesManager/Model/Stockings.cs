@@ -1,9 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SalesManager.Model
 {
+    public class Suppliers
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int SuppliersID { get; set; }
+
+        [Required]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "Supplier name is required")]
+
+        public string SupplierName { get; set; }
+
+        public DateTime DateAdded { get; set; }
+
+        [StringLength(50)]
+        public string Address { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public ICollection<Stockings> Stockings { get; set; }
+    }
+
+    public class SupplierPayments
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int SupplierPaymentsID { get; set; }
+
+        [Required]
+        public int SuppliersID { get; set; }
+
+        public DateTime DatePaid { get; set; }
+
+        [Range(1, double.MaxValue)]
+        [Column(TypeName = "money")]
+        public decimal Amount { get; set; }
+
+        [Required]
+        public byte PaymentTypesID { get; set; }
+
+        [Required]
+        [StringLength(32, MinimumLength = 1)]
+        public string Reference { get; set; }
+
+        public virtual Suppliers Suppliers { get; set; }
+
+        public virtual PaymentTypes PaymentTypes { get; set; }
+    }
+
     public class Stockings
     {
         [Key]
@@ -26,8 +75,7 @@ namespace SalesManager.Model
         public string Receipt { get; set; }
 
         [Required]
-        [StringLength(75, MinimumLength = 5)]
-        public string Source { get; set; }
+        public int SuppliersID { get; set; }
 
         [Range(1, double.MaxValue)]
         [Required]
@@ -41,5 +89,6 @@ namespace SalesManager.Model
 
         public virtual Items Items { get; set; }
 
+        public virtual Suppliers Suppliers { get; set; }
     }
 }

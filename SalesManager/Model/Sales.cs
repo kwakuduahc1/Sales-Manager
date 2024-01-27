@@ -16,7 +16,7 @@ namespace SalesManager.Model
         public short Quantity { get; set; }
 
         [Required]
-        public int ItemsID { get; set; }
+        public int PricesID { get; set; }
 
         [Column(TypeName = "money")]
         [Range(0, double.MaxValue)]
@@ -35,7 +35,7 @@ namespace SalesManager.Model
         [Timestamp, ConcurrencyCheck]
         public byte[] Concurrency { get; set; }
 
-        public virtual Items Items { get; set; }
+        public virtual Prices Prices { get; set; }
 
         public virtual Payments Payments { get; set; }
     }
@@ -49,6 +49,17 @@ namespace SalesManager.Model
         public short Quantity { get; set; }
 
         public string ItemName { get; set; }
+
+        [Required]
+        public int UnitsID { get; set;}
+
+        public string Unit { get; set; }
+
+        [Required]
+        public int PricesID { get; set; }
+
+        public decimal Price { get;set; }
+
         public decimal Cost { get; set; }
     }
 
@@ -73,6 +84,12 @@ namespace SalesManager.Model
         [DefaultValue(0)]
         [Required]
         public decimal MobileMoney { get; set; }
+
+        [Column(TypeName = "money")]
+        [Range(0, double.MaxValue)]
+        [DefaultValue(0)]
+        [Required]
+        public decimal Total { get; set; }
 
         [DataType(DataType.PhoneNumber)]
         [StringLength(10, MinimumLength = 10)]

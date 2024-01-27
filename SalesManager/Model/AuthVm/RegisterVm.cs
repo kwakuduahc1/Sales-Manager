@@ -26,6 +26,10 @@ namespace SalesManager.Model.ViewModels
         [DefaultValue(false)]
         public bool RememberMe { get; set; }
 
-        internal ApplicationUser Transform => new() { UserName = UserName, Password = Password };
+        [Required]
+        [StringLength(50, MinimumLength = 5)]
+        public string FullName { get; set; }
+
+        internal ApplicationUser Transform() => new() { UserName = UserName, Password = Password, FullName = FullName };
     }
 }

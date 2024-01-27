@@ -23,34 +23,29 @@ namespace SalesManager.Areas.Stores.Controllers
         public PricesController(DbContextOptions<ApplicationDbContext> dbContext) => db = new ApplicationDbContext(dbContext);
 
         [HttpGet]
-        public async Task<IEnumerable> List()
+        public async Task<IEnumerable> List(int id)
         {
-            var qry = @"select i.itemsID, i.itemName, ISNULL(p.Price, 0) price
-                            from Items i 
-                            outer apply(
-	                            select top 1 Price 
-	                            from Prices p 
-	                            where p.ItemsID = i.ItemsID
-	                            order by DateSet desc
-                            )p
-                            ";
-            return await db.Database.GetDbConnection().QueryAsync(qry);
+            return await db.Prices.Where(x => x.UnitsID == id).Select(x => new
+            {
+                x.Setter,
+                x.UnitsID,
+                x.PricesID,
+                x.Price,
+                x.DateSet
+            }).ToListAsync();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] List<Prices> prices)
+        public async Task<IActionResult> Create([FromBody] Prices price)
         {
 
             if (!ModelState.IsValid)
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
-            prices.ForEach(p =>
-            {
-                p.DateSet = DateTime.UtcNow;
-                p.Setter = User.Identity.Name;
-                db.Prices.Add(p);
-            });
+            price.DateSet = DateTime.UtcNow;
+            price.Setter = User.Identity.Name;
+            db.Prices.Add(price);
             await db.SaveChangesAsync();
-            return Created("", prices);
+            return Created("", price);
         }
     }
 }

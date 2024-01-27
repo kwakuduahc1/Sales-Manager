@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SalesManager.Model;
 
@@ -11,16 +12,17 @@ using SalesManager.Model;
 namespace SalesManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230510063501_PayPrice")]
+    partial class PayPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "6.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -55,7 +57,7 @@ namespace SalesManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -80,7 +82,7 @@ namespace SalesManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -161,7 +163,7 @@ namespace SalesManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemsID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemsID"), 1L, 1);
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
@@ -192,7 +194,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 1,
-                            DateAdded = new DateTime(2024, 1, 26, 21, 12, 46, 913, DateTimeKind.Utc).AddTicks(2865),
+                            DateAdded = new DateTime(2023, 5, 10, 6, 35, 0, 623, DateTimeKind.Utc).AddTicks(7488),
                             Group = "Consoles",
                             ItemName = "Playstation 2",
                             MinimumStock = 20
@@ -200,7 +202,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 2,
-                            DateAdded = new DateTime(2024, 1, 26, 21, 12, 46, 913, DateTimeKind.Utc).AddTicks(2875),
+                            DateAdded = new DateTime(2023, 5, 10, 6, 35, 0, 623, DateTimeKind.Utc).AddTicks(7502),
                             Group = "Consoles",
                             ItemName = "XBox One",
                             MinimumStock = 10
@@ -208,7 +210,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 3,
-                            DateAdded = new DateTime(2024, 1, 26, 21, 12, 46, 913, DateTimeKind.Utc).AddTicks(2879),
+                            DateAdded = new DateTime(2023, 5, 10, 6, 35, 0, 623, DateTimeKind.Utc).AddTicks(7507),
                             Group = "Consoles",
                             ItemName = "XBox 360",
                             MinimumStock = 15
@@ -216,7 +218,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 4,
-                            DateAdded = new DateTime(2024, 1, 26, 21, 12, 46, 913, DateTimeKind.Utc).AddTicks(2882),
+                            DateAdded = new DateTime(2023, 5, 10, 6, 35, 0, 623, DateTimeKind.Utc).AddTicks(7510),
                             Group = "Consoles",
                             ItemName = "XBox",
                             MinimumStock = 5
@@ -224,7 +226,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 5,
-                            DateAdded = new DateTime(2024, 1, 26, 21, 12, 46, 913, DateTimeKind.Utc).AddTicks(2885),
+                            DateAdded = new DateTime(2023, 5, 10, 6, 35, 0, 623, DateTimeKind.Utc).AddTicks(7514),
                             Group = "Contollers",
                             ItemName = "XBox One Wired Controller",
                             MinimumStock = 10
@@ -232,45 +234,10 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 6,
-                            DateAdded = new DateTime(2024, 1, 26, 21, 12, 46, 913, DateTimeKind.Utc).AddTicks(2893),
+                            DateAdded = new DateTime(2023, 5, 10, 6, 35, 0, 623, DateTimeKind.Utc).AddTicks(7521),
                             Group = "Contollers",
                             ItemName = "XBox 360 Wireless Controller",
                             MinimumStock = 10
-                        });
-                });
-
-            modelBuilder.Entity("SalesManager.Model.PaymentTypes", b =>
-                {
-                    b.Property<byte>("PaymentTypesID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<byte>("PaymentTypesID"));
-
-                    b.Property<string>("PaymentType")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.HasKey("PaymentTypesID");
-
-                    b.ToTable("PaymentTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            PaymentTypesID = (byte)1,
-                            PaymentType = "Cash"
-                        },
-                        new
-                        {
-                            PaymentTypesID = (byte)2,
-                            PaymentType = "Mobile Money"
-                        },
-                        new
-                        {
-                            PaymentTypesID = (byte)3,
-                            PaymentType = "Vodafone Cash"
                         });
                 });
 
@@ -317,13 +284,48 @@ namespace SalesManager.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("SalesManager.Model.PaymentTypes", b =>
+                {
+                    b.Property<byte>("PaymentTypesID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<byte>("PaymentTypesID"), 1L, 1);
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.HasKey("PaymentTypesID");
+
+                    b.ToTable("PaymentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            PaymentTypesID = (byte)1,
+                            PaymentType = "Cash"
+                        },
+                        new
+                        {
+                            PaymentTypesID = (byte)2,
+                            PaymentType = "Mobile Money"
+                        },
+                        new
+                        {
+                            PaymentTypesID = (byte)3,
+                            PaymentType = "Vodafone Cash"
+                        });
+                });
+
             modelBuilder.Entity("SalesManager.Model.Prices", b =>
                 {
                     b.Property<int>("PricesID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PricesID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PricesID"), 1L, 1);
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
@@ -356,7 +358,7 @@ namespace SalesManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("SalesID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("SalesID"), 1L, 1);
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
@@ -404,7 +406,7 @@ namespace SalesManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("StockingsID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("StockingsID"), 1L, 1);
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
@@ -453,7 +455,7 @@ namespace SalesManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierPaymentsID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierPaymentsID"), 1L, 1);
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("money");
@@ -487,7 +489,7 @@ namespace SalesManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SuppliersID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SuppliersID"), 1L, 1);
 
                     b.Property<string>("Address")
                         .HasMaxLength(50)
@@ -515,7 +517,7 @@ namespace SalesManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UnitsID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UnitsID"), 1L, 1);
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
@@ -556,11 +558,6 @@ namespace SalesManager.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -750,14 +747,14 @@ namespace SalesManager.Migrations
                     b.Navigation("Stockings");
                 });
 
-            modelBuilder.Entity("SalesManager.Model.PaymentTypes", b =>
-                {
-                    b.Navigation("SupplierPayments");
-                });
-
             modelBuilder.Entity("SalesManager.Model.Payments", b =>
                 {
                     b.Navigation("Sales");
+                });
+
+            modelBuilder.Entity("SalesManager.Model.PaymentTypes", b =>
+                {
+                    b.Navigation("SupplierPayments");
                 });
 
             modelBuilder.Entity("SalesManager.Model.Suppliers", b =>

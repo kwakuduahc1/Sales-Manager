@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SalesManager.Areas.Stores.Controllers;
 using SalesManager.Models;
 using System;
 
@@ -13,6 +14,7 @@ namespace SalesManager.Model
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.EnableSensitiveDataLogging();
             base.OnConfiguring(optionsBuilder);
         }
 
@@ -49,5 +51,11 @@ namespace SalesManager.Model
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         public virtual DbSet<PaymentTypes> PaymentTypes { get; set; }
+
+        public virtual DbSet<Units> Units { get; set; }
+
+        public virtual DbSet<Suppliers> Suppliers { get;  set; }
+
+        public virtual DbSet<SupplierPayments> SupplierPayments { get; set; }
     }
 }

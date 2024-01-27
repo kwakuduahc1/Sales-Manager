@@ -16,7 +16,7 @@ namespace SalesManager.Model
         public decimal Price { get; set; }
 
         [Required]
-        public int ItemsID { get; set; }
+        public int UnitsID { get; set; }
 
         public DateTime DateSet { get; set; }
 
@@ -26,6 +26,6 @@ namespace SalesManager.Model
         [Timestamp, ConcurrencyCheck]
         public byte[] Concurrency { get; set; }
 
-        public virtual Items Items { get; set; }
+        public virtual Units Units { get; set; }
     }
 }

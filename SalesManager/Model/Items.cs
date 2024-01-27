@@ -29,10 +29,32 @@ namespace SalesManager.Model
         [Timestamp, ConcurrencyCheck]
         public byte[] Concurrency { get; set; }
 
-        public virtual ICollection<Prices> Prices { get; set; }
-
         public virtual ICollection<Sales> Sales { get; set; }
 
         public virtual ICollection<Stockings> Stockings { get; set; }
+    }
+
+    public class Units
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int UnitsID { get; set; }
+
+        [Required]
+        public int ItemsID { get; set; }
+
+        [Required]
+        [StringLength(50, MinimumLength = 3)]
+        public string Unit { get; set; }
+
+        [Required]
+        [Range(1, 500)]
+        public float Quantity { get; set; }
+
+        [DefaultValue(true)]
+        public bool Active { get; set; }
+
+        public virtual Items Items { get; set; }
+
+        public virtual ICollection<Prices> Prices { get; set; }
     }
 }

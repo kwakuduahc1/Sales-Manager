@@ -39,8 +39,8 @@ namespace SalesManager.Model
         [Range(0, double.MaxValue)]
         public decimal Total { get; set; }
 
-        [Column(TypeName = "varchar(30)")]
         [Required]
+        [Column(TypeName = "varchar(30)")]
         [DefaultValue("Outright Purchase")]
         [StringLength(30, MinimumLength = 5)]
         public string SalesType { get; set; }
@@ -52,4 +52,22 @@ namespace SalesManager.Model
 
         public virtual ICollection<Sales> Sales { get; set; }
     }
+
+    public class SalesLedgerVm
+    {
+        public string Receipt { get; set; }
+        public decimal Cash { get; set; }
+        public decimal MobileMoney { get; set; }
+        public string Customer { get; set; }
+        public decimal Total { get; set; }
+        public string SalesType { get; set; }
+        public DateTime DatePaid { get; set; }
+        public decimal Cost { get; set; }
+        public string ItemName { get; set; }
+        public string Unit { get; set; }
+        public string Telephone { get; set; }
+        public int PricesID { get; set; }
+        public short Quantity { get; set; }
+    }
+
 }

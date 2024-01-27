@@ -36,7 +36,6 @@ namespace SalesManager.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginVm user)
         {
-            return Ok();
             if (!ModelState.IsValid)
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
             var _user = await _userManager.FindByNameAsync(user.UserName);
@@ -52,11 +51,15 @@ namespace SalesManager.Controllers
 
         [HttpPost]
         //[Authorize(Roles = "Power")]
+        //[Authorize]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([FromBody] RegisterVm reg)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
-            ApplicationUser user = reg.Transform;
+            if (reg.Password != reg.ConfirmPassword)
+                return BadRequest(new { Error = "The confirmation password must match" });
+            ApplicationUser user = reg.Transform();
             var result = await _userManager.CreateAsync(user, user.Password);
             if (!result.Succeeded)
                 return BadRequest(new { Message = result.Errors.First().Description });
@@ -77,20 +80,5 @@ namespace SalesManager.Controllers
             await _signInManager.SignOutAsync();
             return Accepted();
         }
-
-        //private async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
-        //{
-        //    if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-        //        return await Task.FromResult<ClaimsIdentity>(null);
-        //    var userToVerify = await _userManager.FindByNameAsync(userName);
-        //    if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
-        //    if (await _userManager.CheckPasswordAsync(userToVerify, password))
-        //    {
-        //        var claim = await _userManager.GetClaimsAsync(userToVerify);
-        //        return claim as ClaimsIdentity;
-        //    }
-        //    else
-        //        return await Task.FromResult<ClaimsIdentity>(null);
-        //}
     }
 }
