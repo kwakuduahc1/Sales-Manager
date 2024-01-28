@@ -32,8 +32,8 @@ namespace SalesManager.Controllers
             appFeatures = app;
         }
 
+        //[AllowAnonymous]
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginVm user)
         {
             if (!ModelState.IsValid)

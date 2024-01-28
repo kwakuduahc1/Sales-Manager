@@ -12,7 +12,8 @@ using SalesManager.Models;
 
 namespace SalesManager.Controllers
 {
-    //[Authorize(Roles = "Power")]
+    //[AutoValidateAntiforgeryToken]
+    [Authorize(Roles = "Power")]
     [EnableCors("bStudioApps")]
     public class UsersController(UserManager<ApplicationUser> userManager, DbContextOptions<ApplicationDbContext> options) : Controller
     {
@@ -65,12 +66,9 @@ namespace SalesManager.Controllers
             return Accepted();
         }
 
-        [HttpDelete()]
-        [ValidateAntiForgeryToken]
-        [Authorize]
+        [HttpDelete]
         public async Task<IActionResult> RemoveUser(string id)
         {
-            var req = Request;
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
                 return BadRequest(new { Message = "The user was not found" });

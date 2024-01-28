@@ -23,19 +23,20 @@ namespace SalesManager.Areas.Stores.Controllers
         public UnitsController(DbContextOptions<ApplicationDbContext> dbContext) => db = new ApplicationDbContext(dbContext);
 
         [HttpGet]
-        public async Task<IEnumerable> List(int id) => await db.Units.Where(x => x.ItemsID == id && x.Active).Select(x => new { x.UnitsID, x.ItemsID, x.Unit, x.Quantity }).ToListAsync();
+        public async Task<IEnumerable> List(int id) => await db.Units.Where(x => x.ItemsID == id && x.Active).Select(x => new { x.UnitsID, x.ItemsID, x.Unit, x.Quantity, x.Items.ItemName }).ToListAsync();
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Units unit)
+        public async Task<IActionResult> Create([FromBody] CreateUnitsVM unit)
         {
 
             if (!ModelState.IsValid)
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
-            if (await db.Units.AnyAsync(x => x.Unit == unit.Unit && x.Active))
+            if (await db.Units.AnyAsync(x => x.ItemsID == unit.ItemsID && x.Unit == unit.Unit && x.Active))
                 return BadRequest(new { Message = $"{unit.Unit} already exists for this item" });
-            unit.Active = true;
-            db.Units.Add(unit);
+            var _unit = unit.Convert();
+            db.Units.Add(_unit);
             await db.SaveChangesAsync();
+            unit.UnitsID = _unit.UnitsID;
             return Created("", unit);
         }
 

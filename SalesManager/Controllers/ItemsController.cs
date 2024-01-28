@@ -45,18 +45,11 @@ namespace SalesManager.Areas.Stores.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable> Balances() => await db.Items
-            .Select(x => new
-            {
-                x.ItemName,
-                x.ItemsID,
-                x.Group,
-                x.MinimumStock,
-                Received = x.Stockings.Sum(t => t.Quantity),
-                Issued = x.Sales.Sum(t => t.Quantity)
-            })
-            .ToListAsync();
-
+        public async Task<IEnumerable> Balances()
+        {
+            var qry = "SELECT * FROM ItemBalances";
+            return await db.Database.GetDbConnection().QueryAsync<BalancesVm>(qry);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Find(int id)
@@ -81,6 +74,7 @@ namespace SalesManager.Areas.Stores.Controllers
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
             if (await db.Items.AnyAsync(x => x.ItemName == item.ItemName))
                 return BadRequest(new { Message = $"{item.ItemName} already exists" });
+            item.DateAdded = DateTime.UtcNow;
             db.Add(item);
             await db.SaveChangesAsync();
             return Created($"/Items/Find?id={item.ItemsID}", item);
@@ -100,4 +94,16 @@ namespace SalesManager.Areas.Stores.Controllers
             return Created($"/Items/Find?id={item.ItemsID}", item);
         }
     }
+
+    public class BalancesVm
+    {
+        public string ItemName { get; set; }
+        public int ItemsID { get; set; }
+        public string Group { get; set; }
+        public int MinimumStock { get; set; }
+        public int Received { get; set; }
+        public int Issued { get; set; }
+        public double Total { get; set; }
+    }
+
 }

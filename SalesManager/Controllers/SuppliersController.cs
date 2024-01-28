@@ -19,7 +19,7 @@ namespace SuppliersManager.Controllers
         public SuppliersController(DbContextOptions<ApplicationDbContext> dbContext) => db = new ApplicationDbContext(dbContext);
 
         [HttpGet]
-        public async Task<IEnumerable> List() => await db.Suppliers.Select(x => new
+        public async Task<IEnumerable> List() => await db.Suppliers.Where(x => x.IsActive).Select(x => new
         {
             x.SuppliersID,
             x.SupplierName,
@@ -58,9 +58,10 @@ namespace SuppliersManager.Controllers
             if (await db.Suppliers.AnyAsync(x => x.SupplierName == sup.SupplierName && x.IsActive))
                 return BadRequest(new { Message = "The supplier name already exists" });
             sup.DateAdded = DateTime.UtcNow;
+            sup.IsActive = true;
             db.Add(sup);
             await db.SaveChangesAsync();
-            return Created("", new { sup });
+            return Created("", sup);
         }
 
         [HttpPost]
@@ -78,10 +79,10 @@ namespace SuppliersManager.Controllers
             return Accepted(_sup);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] Suppliers stock)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
         {
-            var _item = await db.Suppliers.FindAsync(stock.SuppliersID);
+            var _item = await db.Suppliers.FindAsync(id);
             if (_item == null)
                 return BadRequest(new { Message = "The supplier does not exist" });
             _item.IsActive = false;

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace SalesManager.Areas.Stores.Controllers
 {
     [EnableCors("bStudioApps")]
-    //[Authorize(Roles = "Power")]
+    [Authorize(Roles = "Power")]
     //[AutoValidateAntiforgeryToken]
     public class PricesController : Controller
     {
@@ -32,7 +32,9 @@ namespace SalesManager.Areas.Stores.Controllers
                 x.PricesID,
                 x.Price,
                 x.DateSet
-            }).ToListAsync();
+            })
+                .OrderByDescending(x => x.DateSet)
+            .ToListAsync();
         }
 
         [HttpPost]

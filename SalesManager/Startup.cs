@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System;
@@ -15,7 +14,6 @@ using SalesManager.Model;
 using Microsoft.EntityFrameworkCore;
 using SalesManager.Models;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace SalesManager
 {
@@ -32,7 +30,7 @@ namespace SalesManager
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 //options.EnableSensitiveDataLogging();
-                //options.LogTo(x=> Console.WriteLine(x));
+                //options.LogTo(x => Console.WriteLine(x));
                 //options.log
             });
             services.AddIdentity<ApplicationUser, IdentityRole>(x =>
@@ -47,7 +45,6 @@ namespace SalesManager
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             var audience = Configuration.GetSection("AppFeatures").GetSection("Audience").Value;
-            Console.WriteLine(audience);
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
