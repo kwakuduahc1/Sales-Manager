@@ -27,6 +27,21 @@ namespace SalesManager.Model
         public ICollection<Stockings> Stockings { get; set; }
     }
 
+    public class EditSuppliersVm
+    {
+        [Key]
+        [Required]
+        public int SuppliersID { get; set; }
+
+        [Required]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "Supplier name is required")]
+        public string SupplierName { get; set; }
+
+        [StringLength(50)]
+        [Required]
+        public string Address { get; set; }
+    }
+
     public class SupplierPayments
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

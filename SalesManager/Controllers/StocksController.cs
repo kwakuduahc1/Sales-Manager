@@ -32,6 +32,16 @@ namespace SalesManager.Controllers
             x.StockingsID
         }).ToListAsync();
 
+        [HttpGet]
+        public async Task<IEnumerable> History(int id)
+        {
+            string qry = @"SELECT TOP 10 Receipt AS receipt, CAST(DateBought AS date) AS DateBought, SUM(Quantity * UnitCost) AS total
+                            FROM   Stockings AS s
+                            WHERE (SuppliersID = @id)
+                            GROUP BY Receipt, CAST(DateBought AS date)
+                            ORDER BY DateBought DESC";
+            return await db.Database.GetDbConnection().QueryAsync<StockHistoryVm>(qry, param: new { id });
+        }
 
         [HttpGet]
         public async Task<IEnumerable> Ledger(int id, DateTime start)

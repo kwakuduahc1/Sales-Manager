@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using SalesManager.Models;
-using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,18 +8,10 @@ using System.Text;
 
 namespace SalesManager.Helper
 {
-    public class AuthHelper
+    public class AuthHelper(IList<Claim> claims, AppFeatures app)
     {
-        private IWebHostEnvironment Env { get; }
-        private readonly IList<Claim> Claims;
-        private readonly IAppFeatures App;
+        private readonly IAppFeatures App = app;
 
-        public AuthHelper(IList<Claim> claims, IWebHostEnvironment environment, AppFeatures app)
-        {
-            Env = environment;
-            Claims = claims;
-            App = app;
-        }
         public string Key
         {
             get
@@ -32,7 +22,7 @@ namespace SalesManager.Helper
                 var tokeOptions = new JwtSecurityToken(
                     issuer: App.Issuer,
                     audience: App.Audience,
-                    claims: Claims,
+                    claims: claims,
                     expires: App.Expiry,
                     signingCredentials: signinCredentials
                 );

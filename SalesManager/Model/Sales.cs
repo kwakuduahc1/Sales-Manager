@@ -14,13 +14,16 @@ namespace SalesManager.Model
 
         [Required]
         public short Quantity { get; set; }
-
         [Required]
         public int PricesID { get; set; }
+
 
         [Column(TypeName = "money")]
         [Range(0, double.MaxValue)]
         public decimal Cost { get; set; }
+
+        public int? ItemsID { get; set; }
+
 
         [StringLength(30, MinimumLength = 5)]
         public string UserName { get; set; }
@@ -31,6 +34,7 @@ namespace SalesManager.Model
         public string Receipt { get; set; }
 
         public DateTime DateAdded { get; set; }
+
 
         [Timestamp, ConcurrencyCheck]
         public byte[] Concurrency { get; set; }
@@ -101,6 +105,9 @@ namespace SalesManager.Model
         public List<SalesVm> Sales { get; set; }
 
         public string Receipt { get; set; }
+
+        public int ItemsID { get; set; }
+
         public DateTime DatePaid { get; set; }
     }
 }

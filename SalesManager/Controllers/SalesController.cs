@@ -71,22 +71,32 @@ namespace SalesManager.Controllers
         [HttpGet]
         public async Task<IActionResult> Receipt(string id)
         {
-            var rec = await db.Payments.Where(x => x.Receipt == id).Select(x => new
+            const string qry = "[dbo].[spReceipts]";
+            var res = await db.Database.GetDbConnection().QueryAsync<PaymentVm>(qry, param: new { receipt = id });
+            if (res is null)
+                return NotFound(new { Message = "Receipt not found" });
+            var pay = res.GroupBy(x => new
             {
-                x.Telephone,
-                x.MobileMoney,
-                x.Total,
-                x.CanContact,
                 x.Customer,
-                x.DatePaid,
-                x.Cash,
-                Sales = x.Sales.Select(t => new
+                x.Receipt,
+                x.SalesType,
+                x.Telephone
+
+            }, (k, v) => new CustomerVm
+            {
+                Telephone = k.Telephone,
+                Receipt = k.Receipt,
+                Customer = k.Customer,
+                SalesType = k.SalesType,
+                Total = v.Where(o => o.Receipt == k.Receipt).Sum(o => o.Cost),
+                Sales = v.Where(o => o.Receipt == k.Receipt).Select(o => new TransactionVm
                 {
-                    t.Quantity, /*t.Prices.ItemName*/
-                    t.Cost
-                })
-            }).SingleOrDefaultAsync();
-            return rec is null ? NotFound(new { Message = "Receipt not found" }) : Ok(rec);
+                    Cost = o.Cost,
+                    ItemName = o.ItemName,
+                    Quantity = o.Quantity
+                }).ToList()
+            }).FirstOrDefault();
+            return Ok(pay);
         }
 
         [HttpGet]
@@ -96,12 +106,9 @@ namespace SalesManager.Controllers
         [HttpGet]
         public async Task<IEnumerable> Recent()
         {
-            const string qry = @"SELECT   TOP (20) s.SalesID, s.Quantity, s.Cost, s.Receipt, s.PricesID, p.Price, p.Setter, u.Unit, i.ItemsID, i.ItemName, s.DateAdded
-                                FROM         Sales AS s INNER JOIN
-                                                         Prices AS p ON p.PricesID = s.PricesID INNER JOIN
-                                                         Units AS u ON u.UnitsID = p.UnitsID INNER JOIN
-                                                         Items AS i ON i.ItemsID = u.ItemsID
-                                ORDER BY s.DateAdded DESC";
+            const string qry = @"SELECT TOP (10) Receipt, Cash + MobileMoney AS Cost, SalesType, DatePaid, Customer
+                                FROM   Payments
+                                ORDER BY DatePaid DESC";
 
             return await db.Database.GetDbConnection().QueryAsync<RecentSalesVm>(qry);
         }
@@ -137,6 +144,7 @@ namespace SalesManager.Controllers
                 payments.Sales.Add(new Sales
                 {
                     DateAdded = payments.DatePaid,
+                    ItemsID = x.ItemsID,
                     PricesID = x.PricesID,
                     Quantity = x.Quantity,
                     Cost = x.Cost,
@@ -174,4 +182,46 @@ namespace SalesManager.Controllers
             return Accepted();
         }
     }
+
+    public class PaymentVm
+    {
+        public string Customer { get; set; }
+
+        public string Telephone { get; set; }
+
+        public string Receipt { get; set; }
+
+        public decimal Cost { get; set; }
+
+        public string ItemName { get; set; }
+
+        public string SalesType { get; set; }
+
+        public int Quantity { get; set; }
+    }
+
+    public class CustomerVm
+    {
+        public string Customer { get; set; }
+
+        public string Telephone { get; set; }
+
+        public string Receipt { get; set; }
+
+        public decimal Total { get; set; }
+
+        public string SalesType { get; set; }
+
+        public List<TransactionVm> Sales { get; set; }
+    }
+
+    public class TransactionVm
+    {
+        public decimal Cost { get; set; }
+
+        public string ItemName { get; set; }
+
+        public int Quantity { get; set; }
+    }
+
 }

@@ -49,5 +49,25 @@ namespace SalesManager.Areas.Stores.Controllers
             await db.SaveChangesAsync();
             return Created("", price);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SetPrices([FromBody] Prices[] prices)
+        {
+            List<Prices> _prices = []; 
+            var date = DateTime.UtcNow;
+            foreach (var price in prices)
+            {
+                _prices.Add(new Prices
+                {
+                    DateSet = date,
+                    Price = price.Price,
+                    Setter = User.Identity.Name,
+                    UnitsID = price.UnitsID,
+                });
+            }
+            db.AddRange(_prices);
+            await db.SaveChangesAsync();
+            return Ok();
+        }
     }
 }

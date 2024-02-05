@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SalesManager.Model;
 
@@ -11,9 +12,11 @@ using SalesManager.Model;
 namespace SalesManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240201063205_SalesItems")]
+    partial class SalesItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -192,7 +195,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 1,
-                            DateAdded = new DateTime(2024, 2, 1, 6, 51, 29, 107, DateTimeKind.Utc).AddTicks(2326),
+                            DateAdded = new DateTime(2024, 2, 1, 6, 32, 3, 934, DateTimeKind.Utc).AddTicks(4287),
                             Group = "Consoles",
                             ItemName = "Playstation 2",
                             MinimumStock = 20
@@ -200,7 +203,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 2,
-                            DateAdded = new DateTime(2024, 2, 1, 6, 51, 29, 107, DateTimeKind.Utc).AddTicks(2358),
+                            DateAdded = new DateTime(2024, 2, 1, 6, 32, 3, 934, DateTimeKind.Utc).AddTicks(4306),
                             Group = "Consoles",
                             ItemName = "XBox One",
                             MinimumStock = 10
@@ -208,7 +211,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 3,
-                            DateAdded = new DateTime(2024, 2, 1, 6, 51, 29, 107, DateTimeKind.Utc).AddTicks(2367),
+                            DateAdded = new DateTime(2024, 2, 1, 6, 32, 3, 934, DateTimeKind.Utc).AddTicks(4313),
                             Group = "Consoles",
                             ItemName = "XBox 360",
                             MinimumStock = 15
@@ -216,7 +219,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 4,
-                            DateAdded = new DateTime(2024, 2, 1, 6, 51, 29, 107, DateTimeKind.Utc).AddTicks(2373),
+                            DateAdded = new DateTime(2024, 2, 1, 6, 32, 3, 934, DateTimeKind.Utc).AddTicks(4320),
                             Group = "Consoles",
                             ItemName = "XBox",
                             MinimumStock = 5
@@ -224,7 +227,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 5,
-                            DateAdded = new DateTime(2024, 2, 1, 6, 51, 29, 107, DateTimeKind.Utc).AddTicks(2379),
+                            DateAdded = new DateTime(2024, 2, 1, 6, 32, 3, 934, DateTimeKind.Utc).AddTicks(4327),
                             Group = "Contollers",
                             ItemName = "XBox One Wired Controller",
                             MinimumStock = 10
@@ -232,7 +235,7 @@ namespace SalesManager.Migrations
                         new
                         {
                             ItemsID = 6,
-                            DateAdded = new DateTime(2024, 2, 1, 6, 51, 29, 107, DateTimeKind.Utc).AddTicks(2399),
+                            DateAdded = new DateTime(2024, 2, 1, 6, 32, 3, 934, DateTimeKind.Utc).AddTicks(4348),
                             Group = "Contollers",
                             ItemName = "XBox 360 Wireless Controller",
                             MinimumStock = 10
@@ -382,9 +385,6 @@ namespace SalesManager.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<int?>("UnitsID")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(30)

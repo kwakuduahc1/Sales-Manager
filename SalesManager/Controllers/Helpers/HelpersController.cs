@@ -6,6 +6,7 @@ using SalesManager.Model;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace SalesManager.Controllers.Helpers
@@ -54,10 +55,15 @@ namespace SalesManager.Controllers.Helpers
 
         static byte RandomByte()
         {
-            using var randomizationProvider = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            var randomBytes = new byte[1];
-            randomizationProvider.GetBytes(randomBytes);
-            return randomBytes.Single();
+            //var randomBytes= new byte[32];
+            //string refreshToken = "";
+            return RandomNumberGenerator.GetBytes(32).Single();
+            //using (var rng = RandomNumberGenerator.Create())
+            //{
+            //    rng.GetBytes(randomBytes);
+            //    //refreshToken = Convert.ToBase64String(randomNumber);
+            //}
+            //return randomBytes.Single();
         }
     }
 }

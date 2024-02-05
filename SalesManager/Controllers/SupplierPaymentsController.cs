@@ -26,6 +26,7 @@ namespace SalesManager.Areas.Stores.Controllers
             return await db.SupplierPayments
                 .Where(x => x.SuppliersID == id)
                 .OrderByDescending(x => x.DatePaid)
+                .Take(10)
                 .Select(x => new
                 {
                     x.SuppliersID,
@@ -36,7 +37,6 @@ namespace SalesManager.Areas.Stores.Controllers
                     x.Amount,
                     x.Reference
                 })
-                .Take(20)
                 .ToListAsync();
         }
 

@@ -65,7 +65,7 @@ namespace SuppliersManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit([FromBody] Suppliers sup)
+        public async Task<IActionResult> Edit([FromBody] EditSuppliersVm sup)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { Error = "Invalid data was submitted", Message = ModelState.Values.First(x => x.Errors.Count > 0).Errors.Select(t => t.ErrorMessage).First() });
@@ -74,9 +74,10 @@ namespace SuppliersManager.Controllers
                 return BadRequest(new { Message = "Transaction does not exist" });
             _sup.SupplierName = sup.SupplierName;
             _sup.Address = sup.Address;
+            _sup.IsActive = true;
             db.Entry(_sup).State = EntityState.Modified;
             await db.SaveChangesAsync();
-            return Accepted(_sup);
+            return Accepted();
         }
 
         [HttpDelete]

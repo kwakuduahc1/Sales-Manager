@@ -13,7 +13,7 @@ using SalesManager.Models;
 namespace SalesManager.Controllers
 {
     //[AutoValidateAntiforgeryToken]
-    [Authorize(Roles = "Power")]
+    //[Authorize(Roles = "Power")]
     [EnableCors("bStudioApps")]
     public class UsersController(UserManager<ApplicationUser> userManager, DbContextOptions<ApplicationDbContext> options) : Controller
     {

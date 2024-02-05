@@ -33,8 +33,12 @@ namespace SalesManager.Areas.Stores.Controllers
         [HttpGet]
         public async Task<IEnumerable> List() => await db.Items.ToListAsync();
 
-        //[HttpGet]
-        //public async Task<IEnumerable> Prices() => await db.Items.Where(x => x.Prices.Count > 0).Select(x => new { x.ItemName, x.MinimumStock, x.ItemsID, x.Prices.OrderBy(v=>v.DateSet).LastOrDefault().Price }).ToListAsync();
+        [HttpGet]
+        public async Task<IEnumerable> Prices()
+        {
+            const string qry = @"SELECT * FROM [dbo].[vwItemPrices]";
+            return await db.Database.GetDbConnection().QueryAsync <ItemPricesVm> (qry);
+        }
 
         [HttpGet]
         [AllowAnonymous]
@@ -106,4 +110,15 @@ namespace SalesManager.Areas.Stores.Controllers
         public double Total { get; set; }
     }
 
+    public class ItemPricesVm
+    {
+        public int ItemsID { get; set; }
+        public string ItemName { get; set; }
+        public int PricesID { get; set; }
+        public string Group { get; set; }
+        public decimal Price { get; set; }
+        public string Unit { get; set; }
+        public int UnitsID { get; set; }
+        public int Balance { get; set; }
+    }
 }
