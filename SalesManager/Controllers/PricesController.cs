@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace SalesManager.Areas.Stores.Controllers
 {
     [EnableCors("bStudioApps")]
-    [Authorize(Roles = "Power")]
+    //[Authorize(Roles = "Power")]
     //[AutoValidateAntiforgeryToken]
     public class PricesController : Controller
     {

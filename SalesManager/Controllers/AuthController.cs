@@ -45,7 +45,7 @@ namespace SalesManager.Controllers
                 return Unauthorized();
             await _signInManager.SignInAsync(_user, false);
             var claims = await _userManager.GetClaimsAsync(_user);
-            var token = new AuthHelper(claims, Env, appFeatures).Key;
+            var token = new AuthHelper(claims, appFeatures).Key;
             return Ok(new { Token = token });
         }
 

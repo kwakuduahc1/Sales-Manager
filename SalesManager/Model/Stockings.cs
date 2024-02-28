@@ -13,7 +13,7 @@ namespace SalesManager.Model
         public int SuppliersID { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "Supplier name is required")]
+        [StringLength(75, MinimumLength = 3, ErrorMessage = "Supplier name is required")]
 
         public string SupplierName { get; set; }
 
@@ -92,7 +92,7 @@ namespace SalesManager.Model
         [Required]
         public int SuppliersID { get; set; }
 
-        [Range(1, double.MaxValue)]
+        [Range(0.1, double.MaxValue)]
         [Required]
         public double UnitCost { get; set; }
 

@@ -11,7 +11,7 @@ namespace SalesManager.Model
         public int PricesID { get; set; }
 
         [Required]
-        [Range(1, double.MaxValue)]
+        [Range(0.1, double.MaxValue)]
         [Column(TypeName = "money")]
         public decimal Price { get; set; }
 

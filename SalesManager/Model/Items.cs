@@ -13,7 +13,7 @@ namespace SalesManager.Model
         public int ItemsID { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 3)]
+        [StringLength(75, MinimumLength = 3)]
         public string ItemName { get; set; }
 
         [Required]
