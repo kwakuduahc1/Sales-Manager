@@ -65,9 +65,10 @@ namespace SalesManager.Controllers
                 return BadRequest(new { Message = result.Errors.First().Description });
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.UserName));
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-            if (await _userManager.Users.CountAsync() < 1)
+            var num = await _userManager.Users.CountAsync();
+            if (num == 1)
                 await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Power"));
-            if (await _userManager.Users.CountAsync() > 0)
+            else
                 await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Stocker"));
             await db.SaveChangesAsync();
             return Created("", new { user.UserName, user.PhoneNumber, user.Email, user.Id });

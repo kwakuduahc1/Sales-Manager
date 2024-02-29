@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SalesManager.Model;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace SuppliersManager.Controllers
 {
     [EnableCors("bStudioApps")]
-    //[Authorize(Roles = "Power, Suppliers")]
+    [Authorize(Roles = "Power")]
     public class SuppliersController : Controller
     {
         private readonly ApplicationDbContext db;

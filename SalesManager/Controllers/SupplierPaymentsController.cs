@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace SalesManager.Areas.Stores.Controllers
 {
     [EnableCors("bStudioApps")]
-    //[Authorize(Roles = "Power")]
+    [Authorize(Roles = "Power")]
     //[AutoValidateAntiforgeryToken]
     public class SupplierPaymentsController : Controller
     {

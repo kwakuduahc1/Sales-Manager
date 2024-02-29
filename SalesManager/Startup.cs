@@ -55,14 +55,14 @@ namespace SalesManager
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    //ValidateIssuerSigningKey = true,
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppFeatures").GetSection("Key").Value)),
-                    //ValidateIssuer = true,
+                    ValidateIssuer = true,
                     RequireExpirationTime = true,
-                    //ValidateAudience = true,
+                    ValidateAudience = true,
                     ValidateLifetime = true,
-                    //ValidIssuer = Configuration.GetSection("AppFeatures").GetSection("Issuer").Value,
-                    //ValidAudience = audience // Configuration.GetSection("AppFeatures").GetSection("Audience").Value
+                    ValidIssuer = Configuration.GetSection("AppFeatures").GetSection("Issuer").Value,
+                    ValidAudience = Configuration.GetSection("AppFeatures").GetSection("Audience").Value
                 };
             });
             services.AddDataProtection();
