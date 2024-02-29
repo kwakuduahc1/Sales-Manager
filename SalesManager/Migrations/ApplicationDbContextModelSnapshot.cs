@@ -187,56 +187,6 @@ namespace SalesManager.Migrations
                     b.HasKey("ItemsID");
 
                     b.ToTable("Items");
-
-                    b.HasData(
-                        new
-                        {
-                            ItemsID = 1,
-                            DateAdded = new DateTime(2024, 2, 28, 16, 42, 28, 712, DateTimeKind.Utc).AddTicks(8666),
-                            Group = "Consoles",
-                            ItemName = "Playstation 2",
-                            MinimumStock = 20
-                        },
-                        new
-                        {
-                            ItemsID = 2,
-                            DateAdded = new DateTime(2024, 2, 28, 16, 42, 28, 712, DateTimeKind.Utc).AddTicks(8675),
-                            Group = "Consoles",
-                            ItemName = "XBox One",
-                            MinimumStock = 10
-                        },
-                        new
-                        {
-                            ItemsID = 3,
-                            DateAdded = new DateTime(2024, 2, 28, 16, 42, 28, 712, DateTimeKind.Utc).AddTicks(8680),
-                            Group = "Consoles",
-                            ItemName = "XBox 360",
-                            MinimumStock = 15
-                        },
-                        new
-                        {
-                            ItemsID = 4,
-                            DateAdded = new DateTime(2024, 2, 28, 16, 42, 28, 712, DateTimeKind.Utc).AddTicks(8683),
-                            Group = "Consoles",
-                            ItemName = "XBox",
-                            MinimumStock = 5
-                        },
-                        new
-                        {
-                            ItemsID = 5,
-                            DateAdded = new DateTime(2024, 2, 28, 16, 42, 28, 712, DateTimeKind.Utc).AddTicks(8686),
-                            Group = "Contollers",
-                            ItemName = "XBox One Wired Controller",
-                            MinimumStock = 10
-                        },
-                        new
-                        {
-                            ItemsID = 6,
-                            DateAdded = new DateTime(2024, 2, 28, 16, 42, 28, 712, DateTimeKind.Utc).AddTicks(8693),
-                            Group = "Contollers",
-                            ItemName = "XBox 360 Wireless Controller",
-                            MinimumStock = 10
-                        });
                 });
 
             modelBuilder.Entity("SalesManager.Model.PaymentTypes", b =>
@@ -261,16 +211,6 @@ namespace SalesManager.Migrations
                         {
                             PaymentTypesID = (byte)1,
                             PaymentType = "Cash"
-                        },
-                        new
-                        {
-                            PaymentTypesID = (byte)2,
-                            PaymentType = "Mobile Money"
-                        },
-                        new
-                        {
-                            PaymentTypesID = (byte)3,
-                            PaymentType = "Vodafone Cash"
                         });
                 });
 

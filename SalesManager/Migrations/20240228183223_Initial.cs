@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SalesManager.Migrations
 {
+    /// <inheritdoc />
     public partial class Initial : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -29,6 +31,7 @@ namespace SalesManager.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -54,7 +57,7 @@ namespace SalesManager.Migrations
                 {
                     ItemsID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ItemName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ItemName = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false),
                     Group = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     MinimumStock = table.Column<int>(type: "int", nullable: false),
                     DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -96,6 +99,22 @@ namespace SalesManager.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PaymentTypes", x => x.PaymentTypesID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Suppliers",
+                columns: table => new
+                {
+                    SuppliersID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SupplierName = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Suppliers", x => x.SuppliersID);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,6 +224,28 @@ namespace SalesManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Units",
+                columns: table => new
+                {
+                    UnitsID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ItemsID = table.Column<int>(type: "int", nullable: false),
+                    Unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Quantity = table.Column<float>(type: "real", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Units", x => x.UnitsID);
+                    table.ForeignKey(
+                        name: "FK_Units_Items_ItemsID",
+                        column: x => x.ItemsID,
+                        principalTable: "Items",
+                        principalColumn: "ItemsID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Stockings",
                 columns: table => new
                 {
@@ -215,7 +256,7 @@ namespace SalesManager.Migrations
                     DateBought = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Quantity = table.Column<short>(type: "smallint", nullable: false),
                     Receipt = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    Source = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false),
+                    SuppliersID = table.Column<int>(type: "int", nullable: false),
                     UnitCost = table.Column<double>(type: "float", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -229,56 +270,40 @@ namespace SalesManager.Migrations
                         principalTable: "Items",
                         principalColumn: "ItemsID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Stockings_Suppliers_SuppliersID",
+                        column: x => x.SuppliersID,
+                        principalTable: "Suppliers",
+                        principalColumn: "SuppliersID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Units",
+                name: "SupplierPayments",
                 columns: table => new
                 {
-                    UnitsID = table.Column<int>(type: "int", nullable: false)
+                    SupplierPaymentsID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PricesID = table.Column<int>(type: "int", nullable: false),
-                    Unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ItemsID = table.Column<int>(type: "int", nullable: true)
+                    SuppliersID = table.Column<int>(type: "int", nullable: false),
+                    DatePaid = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<decimal>(type: "money", nullable: false),
+                    PaymentTypesID = table.Column<byte>(type: "tinyint", nullable: false),
+                    Reference = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Units", x => x.UnitsID);
+                    table.PrimaryKey("PK_SupplierPayments", x => x.SupplierPaymentsID);
                     table.ForeignKey(
-                        name: "FK_Units_Items_ItemsID",
-                        column: x => x.ItemsID,
-                        principalTable: "Items",
-                        principalColumn: "ItemsID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Sales",
-                columns: table => new
-                {
-                    SalesID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Quantity = table.Column<short>(type: "smallint", nullable: false),
-                    ItemsID = table.Column<int>(type: "int", nullable: false),
-                    Cost = table.Column<decimal>(type: "money", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
-                    Receipt = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sales", x => x.SalesID);
-                    table.ForeignKey(
-                        name: "FK_Sales_Items_ItemsID",
-                        column: x => x.ItemsID,
-                        principalTable: "Items",
-                        principalColumn: "ItemsID",
+                        name: "FK_SupplierPayments_PaymentTypes_PaymentTypesID",
+                        column: x => x.PaymentTypesID,
+                        principalTable: "PaymentTypes",
+                        principalColumn: "PaymentTypesID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Sales_Payments_Receipt",
-                        column: x => x.Receipt,
-                        principalTable: "Payments",
-                        principalColumn: "Receipt",
+                        name: "FK_SupplierPayments_Suppliers_SuppliersID",
+                        column: x => x.SuppliersID,
+                        principalTable: "Suppliers",
+                        principalColumn: "SuppliersID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -305,28 +330,47 @@ namespace SalesManager.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Items",
-                columns: new[] { "ItemsID", "DateAdded", "Group", "ItemName", "MinimumStock" },
-                values: new object[,]
+            migrationBuilder.CreateTable(
+                name: "Sales",
+                columns: table => new
                 {
-                    { 1, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4350), "Consoles", "Playstation 2", 20 },
-                    { 2, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4361), "Consoles", "XBox One", 10 },
-                    { 3, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4365), "Consoles", "XBox 360", 15 },
-                    { 4, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4368), "Consoles", "XBox", 5 },
-                    { 5, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4371), "Contollers", "XBox One Wired Controller", 10 },
-                    { 6, new DateTime(2023, 5, 8, 16, 27, 24, 710, DateTimeKind.Utc).AddTicks(4377), "Contollers", "XBox 360 Wireless Controller", 10 }
+                    SalesID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantity = table.Column<short>(type: "smallint", nullable: false),
+                    PricesID = table.Column<int>(type: "int", nullable: false),
+                    Cost = table.Column<decimal>(type: "money", nullable: false),
+                    ItemsID = table.Column<int>(type: "int", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    Receipt = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sales", x => x.SalesID);
+                    table.ForeignKey(
+                        name: "FK_Sales_Items_ItemsID",
+                        column: x => x.ItemsID,
+                        principalTable: "Items",
+                        principalColumn: "ItemsID");
+                    table.ForeignKey(
+                        name: "FK_Sales_Payments_Receipt",
+                        column: x => x.Receipt,
+                        principalTable: "Payments",
+                        principalColumn: "Receipt",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Sales_Prices_PricesID",
+                        column: x => x.PricesID,
+                        principalTable: "Prices",
+                        principalColumn: "PricesID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 table: "PaymentTypes",
                 columns: new[] { "PaymentTypesID", "PaymentType" },
-                values: new object[,]
-                {
-                    { (byte)1, "Cash" },
-                    { (byte)2, "Mobile Money" },
-                    { (byte)3, "Vodafone Cash" }
-                });
+                values: new object[] { (byte)1, "Cash" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -378,6 +422,11 @@ namespace SalesManager.Migrations
                 column: "ItemsID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Sales_PricesID",
+                table: "Sales",
+                column: "PricesID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sales_Receipt",
                 table: "Sales",
                 column: "Receipt");
@@ -388,11 +437,27 @@ namespace SalesManager.Migrations
                 column: "ItemsID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Stockings_SuppliersID",
+                table: "Stockings",
+                column: "SuppliersID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupplierPayments_PaymentTypesID",
+                table: "SupplierPayments",
+                column: "PaymentTypesID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupplierPayments_SuppliersID",
+                table: "SupplierPayments",
+                column: "SuppliersID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Units_ItemsID",
                 table: "Units",
                 column: "ItemsID");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -411,16 +476,13 @@ namespace SalesManager.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "PaymentTypes");
-
-            migrationBuilder.DropTable(
-                name: "Prices");
-
-            migrationBuilder.DropTable(
                 name: "Sales");
 
             migrationBuilder.DropTable(
                 name: "Stockings");
+
+            migrationBuilder.DropTable(
+                name: "SupplierPayments");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -429,10 +491,19 @@ namespace SalesManager.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Units");
+                name: "Payments");
 
             migrationBuilder.DropTable(
-                name: "Payments");
+                name: "Prices");
+
+            migrationBuilder.DropTable(
+                name: "PaymentTypes");
+
+            migrationBuilder.DropTable(
+                name: "Suppliers");
+
+            migrationBuilder.DropTable(
+                name: "Units");
 
             migrationBuilder.DropTable(
                 name: "Items");

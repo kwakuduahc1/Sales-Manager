@@ -77,7 +77,7 @@ namespace SuppliersManager.Controllers
             _sup.IsActive = true;
             db.Entry(_sup).State = EntityState.Modified;
             await db.SaveChangesAsync();
-            return Accepted();
+            return Accepted(_sup);
         }
 
         [HttpDelete]

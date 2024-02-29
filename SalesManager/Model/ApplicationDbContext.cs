@@ -23,18 +23,18 @@ namespace SalesManager.Model
             builder.Entity<PaymentTypes>(t =>
             {
                 t.HasData(new { PaymentType = "Cash", PaymentTypesID = (byte)1 });
-                t.HasData(new { PaymentType = "Mobile Money", PaymentTypesID = (byte)2 });
-                t.HasData(new { PaymentType = "Vodafone Cash", PaymentTypesID = (byte)3 });
+                //t.HasData(new { PaymentType = "Mobile Money", PaymentTypesID = (byte)2 });
+                //t.HasData(new { PaymentType = "Vodafone Cash", PaymentTypesID = (byte)3 });
             });
-            builder.Entity<Items>(x =>
-            {
-                x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Consoles", ItemName = "Playstation 2", ItemsID = 1, MinimumStock = 20 });
-                x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Consoles", ItemName = "XBox One", ItemsID = 2, MinimumStock = 10 });
-                x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Consoles", ItemName = "XBox 360", ItemsID = 3, MinimumStock = 15 });
-                x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Consoles", ItemName = "XBox", ItemsID = 4, MinimumStock = 5 });
-                x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Contollers", ItemName = "XBox One Wired Controller", ItemsID = 5, MinimumStock = 10 });
-                x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Contollers", ItemName = "XBox 360 Wireless Controller", ItemsID = 6, MinimumStock = 10 });
-            });
+            //builder.Entity<Items>(x =>
+            //{
+            //    x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Consoles", ItemName = "Playstation 2", ItemsID = 1, MinimumStock = 20 });
+            //    x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Consoles", ItemName = "XBox One", ItemsID = 2, MinimumStock = 10 });
+            //    x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Consoles", ItemName = "XBox 360", ItemsID = 3, MinimumStock = 15 });
+            //    x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Consoles", ItemName = "XBox", ItemsID = 4, MinimumStock = 5 });
+            //    x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Contollers", ItemName = "XBox One Wired Controller", ItemsID = 5, MinimumStock = 10 });
+            //    x.HasData(new Items { DateAdded = DateTime.UtcNow, Group = "Contollers", ItemName = "XBox 360 Wireless Controller", ItemsID = 6, MinimumStock = 10 });
+            //});
             base.OnModelCreating(builder);
         }
 

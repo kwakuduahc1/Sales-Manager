@@ -96,7 +96,7 @@ namespace SalesManager.Model
         public decimal Total { get; set; }
 
         [DataType(DataType.PhoneNumber)]
-        [StringLength(10, MinimumLength = 10)]
+        [StringLength(10)]
         public string Telephone { get; set; }
 
         [DefaultValue(false)]
