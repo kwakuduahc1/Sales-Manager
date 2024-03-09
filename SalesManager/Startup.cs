@@ -41,7 +41,7 @@ namespace SalesManager
                 x.Password.RequireDigit = true;
                 x.Password.RequireUppercase = false;
                 x.Password.RequireLowercase = true;
-                x.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                x.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             //var audience = Configuration.GetSection("AppFeatures").GetSection("Audience").Value;

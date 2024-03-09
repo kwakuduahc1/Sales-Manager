@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SalesManager.Areas.Stores.Controllers;
 using SalesManager.Models;
 using System;
+using System.Data.Common;
 
 namespace SalesManager.Model
 {
@@ -57,5 +58,9 @@ namespace SalesManager.Model
         public virtual DbSet<Suppliers> Suppliers { get;  set; }
 
         public virtual DbSet<SupplierPayments> SupplierPayments { get; set; }
+
+        public virtual DbSet<Expenditure> Expenditures { get;set; }
+
+        public virtual DbSet<ExpenditureItems> ExpenditureItems { get; set; }
     }
 }

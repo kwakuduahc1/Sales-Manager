@@ -14,15 +14,29 @@ using System.Threading.Tasks;
 namespace SalesManager.Areas.Stores.Controllers
 {
     [EnableCors("bStudioApps")]
-    [Authorize(Roles = "Power")]
+    //[Authorize(Roles = "Power")]
     //[AutoValidateAntiforgeryToken]
-    public class PricesController : Controller
+    public class PricesController(DbContextOptions<ApplicationDbContext> dbContext) : Controller
     {
-        private readonly ApplicationDbContext db;
-
-        public PricesController(DbContextOptions<ApplicationDbContext> dbContext) => db = new ApplicationDbContext(dbContext);
+        private readonly ApplicationDbContext db = new ApplicationDbContext(dbContext);
 
         [HttpGet]
+        public async Task<IEnumerable> ItemPrices()
+        {
+            string qry = @"with cte as (select i.ItemsID, i.ItemName, i.[Group], ISNULL(p.Price, st.UnitCost*1.20) Price , s.SupplierName, st.UnitCost, u.UnitsID, u.Unit, RANK() OVER(PARTITION BY i.ItemsID ORDER BY st.DateAdded desc) [Rank]
+                            from Items i
+                            inner join Stockings st on st.ItemsID = i.ItemsID
+                            inner join Units u on u.ItemsID = i.ItemsID
+                            full join Prices p on p.UnitsID = u.UnitsID
+                            inner join Suppliers s on s.SuppliersID = st.SuppliersID)
+                            select ItemsID, ItemName, Unit, UnitsID, [Group], SupplierName, UnitCost, Price, [Rank]
+                            from cte
+                            where [Rank] < 4
+                            order by ItemsID";
+            return await db.Database.GetDbConnection().QueryAsync<ItemSupplierPricesVM>(qry);
+        }
+
+        [HttpGet("{id:required:int}")]
         public async Task<IEnumerable> List(int id)
         {
             return await db.Prices.Where(x => x.UnitsID == id).Select(x => new
@@ -70,4 +84,21 @@ namespace SalesManager.Areas.Stores.Controllers
             return Ok();
         }
     }
+
+    public class ItemSupplierPricesVM
+    {
+        public int ItemsID { get; set; }
+
+        public decimal Price { get; set; }
+        public string ItemName { get; set; }
+        public string Group { get; set; }
+        public string SupplierName { get; set; }
+        public decimal UnitCost { get; set; }
+        public byte Rank { get; set; }
+
+        public int UnitsID { get; set; }
+
+        public string Unit { get; set; }
+    }
+
 }
